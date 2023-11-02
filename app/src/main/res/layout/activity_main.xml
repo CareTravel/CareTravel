@@ -82,12 +82,12 @@
             </Button>
 
             <Button
-                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="50dp"
                 android:layout_marginTop="20dp"
                 android:text="Sign up"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_weight="1"
                 android:background="@drawable/sign"
                 android:textColor="@color/black">
