@@ -23,8 +23,7 @@
             android:textStyle="bold"
             android:textSize="40dp"
             android:layout_marginTop="60dp"
-            android:textAlignment="center">
-        </TextView>
+            android:textAlignment="center" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -34,34 +33,38 @@
             android:layout_marginTop="20dp">
         </ImageView>
 
-        <TextView
+        <EditText
             android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginHorizontal="50dp"
             android:layout_gravity="center"
             android:background="#D9D9D9"
-            android:layout_marginTop="40dp">
-        </TextView>
+            android:layout_marginTop="40dp"
+            android:hint="E-mail"
+            android:inputType="textEmailAddress" />
 
-        <TextView
+        <EditText
+            android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginHorizontal="50dp"
             android:layout_gravity="center"
             android:background="#D9D9D9"
-            android:layout_marginTop="40dp">
-        </TextView>
+            android:layout_marginTop="40dp"
+            android:hint="Name"
+            android:inputType="textPersonName"/>
 
-        <TextView
+        <EditText
             android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginHorizontal="50dp"
             android:layout_gravity="center"
             android:background="#D9D9D9"
-            android:layout_marginTop="40dp">
-        </TextView>
+            android:layout_marginTop="40dp"
+            android:hint="Password"
+            android:inputType="textPassword" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -77,9 +80,7 @@
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_weight="1"
                 android:background="@drawable/sign"
-                android:textColor="@color/black">
-
-            </Button>
+                android:textColor="@color/black" />
 
             <Button
                 android:layout_width="150dp"
@@ -90,9 +91,7 @@
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_weight="1"
                 android:background="@drawable/sign"
-                android:textColor="@color/black">
-
-            </Button>
+                android:textColor="@color/black" />
 
 
 
