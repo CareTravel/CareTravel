@@ -22,6 +22,7 @@
         android:textColor="@color/black"/>
 
         <ImageButton
+            android:id="@+id/my_information"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginStart="90dp"
@@ -47,6 +48,7 @@
         android:queryHint="검색할 방을 입력하세요." />
 
     <Button
+        android:id="@+id/register_room"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:layout_marginHorizontal="20dp"
