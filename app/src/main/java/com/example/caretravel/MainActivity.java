@@ -14,6 +14,10 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
+    }
+    //커밋!
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 }
