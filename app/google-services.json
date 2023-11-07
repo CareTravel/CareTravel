@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "795164333003",
+    "project_id": "caretravel-5b746",
+    "storage_bucket": "caretravel-5b746.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:795164333003:android:f44f2c92ba4de562eb1c4e",
+        "android_client_info": {
+          "package_name": "com.example.caretravel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAFklroY9cuciPVNUFR0BGoZizPaT7N30"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
