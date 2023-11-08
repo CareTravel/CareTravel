@@ -47,14 +47,6 @@
         android:iconifiedByDefault="false"
         android:queryHint="검색할 방을 입력하세요." />
 
-    <Button
-        android:id="@+id/register_room"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_marginHorizontal="20dp"
-        android:background="@drawable/room"
-        tools:ignore="SpeakableTextPresentCheck" />
-<!--    이걸 오른쪽 밑 +버튼에서 자바파일에서 똑같이 자동생성돠게,,,할 수 있나,,?-->
 
     <RelativeLayout
         android:layout_width="match_parent"
