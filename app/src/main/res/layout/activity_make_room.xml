@@ -100,9 +100,4 @@
         android:textSize="40dp"
         tools:ignore="SpeakableTextPresentCheck" />
 
-
-
-
-
-
 </LinearLayout>
