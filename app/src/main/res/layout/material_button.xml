@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+<!--    기능1 준비물 화면(개인 버튼)-->
+
+    <Button
+        android:id="@+id/register_register"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@drawable/room"
+        android:text="'s List"
+        android:gravity="start"
+        android:paddingTop="40dp"
+        android:paddingStart="20dp"
+        android:textSize="30dp"
+        tools:ignore="SpeakableTextPresentCheck" />
+<!--    버튼 안에 있는 텍스트를 받아서 넣으려면 자바에서 해야할듯..?-->
+
+</LinearLayout>
