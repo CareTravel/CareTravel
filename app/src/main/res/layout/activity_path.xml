@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <!--    기능3 경로보기 화면(장소지정)-->
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="#BCD1F1">
+
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/baseline_arrow_back_ios_24"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="경로보기"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:layout_gravity="start"
+            android:padding="20dp"
+            android:textStyle="bold"/>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="위치 등록"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:textStyle="bold"
+        android:textSize="25sp"
+        android:textColor="@color/black"/>
+
+    <TableLayout
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/room"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:stretchColumns="*">
+
+        <TableRow
+            android:id="@+id/placePerDay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/day"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:background="@drawable/room"
+                android:text="1일차"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                >
+            </Button>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:orientation="vertical">
+                <EditText
+                    android:id="@+id/place"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:hint="장소를 입력하세요."
+                    android:textSize="15sp"
+                    android:inputType="text"
+                    android:maxLines="1">
+                </EditText>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_height="150dp"
+                    android:id="@+id/recyclerView"
+                    android:scrollbars="vertical"
+                    android:layout_width="200dp">
+                </androidx.recyclerview.widget.RecyclerView>
+                <ProgressBar
+                    android:id="@+id/progressbar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                </ProgressBar>
+            </LinearLayout>
+        </TableRow>
+</TableLayout>
+
+<!--    여기에다가도 지도 추가하고 새 화면에도 추가하나? 여기에는 기능없이 지도 보기만?-->
+
+</LinearLayout>
