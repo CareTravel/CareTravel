@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="#BCD1F1">
+
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/baseline_arrow_back_ios_24"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="1/n 계산하기"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:layout_gravity="start"
+        android:padding="20dp"
+        android:textStyle="bold"/>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/stroke"
+        android:layout_margin="20dp"
+        android:text="        님은               님에게                       원 입금하세요."
+        android:textColor="@color/black"
+        android:textSize="25dp"
+        android:textAlignment="center"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:text="계산 할 인: 명" />
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="계산하기"
+            android:textSize="20dp"
+            android:layout_marginHorizontal="40dp"
+            android:backgroundTint="#D9D9D9"/>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_weight="6"
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+        <LinearLayout
+            android:id="@+id/linearLayout_timetable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <GridLayout
+                android:id="@+id/gridlayout_timetable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="27"
+                android:layout_marginBottom="30dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/cell"
+                    android:text="월"
+                    android:layout_marginLeft="30dp"/>
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="30dp"
+                    android:text="화"
+                    android:background="@drawable/cell"
+                    android:layout_marginHorizontal="30dp"
+                    android:layout_marginRight="30dp"/>
+
+
+
+            </GridLayout>
+
+            <GridLayout
+                android:id="@+id/gridlayout_timetable2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:columnCount="2"
+                android:rowCount="27"
+                android:layout_marginBottom="30dp"
+                android:orientation="horizontal">
+
+            </GridLayout>
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:background="@drawable/cell"
+                android:text="월"
+                android:layout_marginLeft="30dp"/>
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:background="@drawable/cell"
+                android:text="화"
+                android:layout_marginRight="30dp"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
