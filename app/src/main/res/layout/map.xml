@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <!--    기능3 경로보기 화면(경로 보기-화면에는 지도만)-->
+
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="#BCD1F1">
+
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/baseline_arrow_back_ios_24"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="경로보기"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:layout_gravity="start"
+            android:padding="20dp"
+            android:textStyle="bold"/>
+
+    </androidx.appcompat.widget.Toolbar>
+
+<!--    <androidx.fragment.app.FragmentContainerView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="650dp"-->
+<!--        android:id="@+id/map_fragment"-->
+<!--        android:name="com.google.android.gms.maps.SupportMapFragment">-->
+<!--    </androidx.fragment.app.FragmentContainerView>-->
+
+<!--    위치까지는 여기서 하고 api 자바에서 하나?-->
+
+
+
+</LinearLayout>

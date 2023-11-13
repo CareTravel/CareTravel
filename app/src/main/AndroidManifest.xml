@@ -35,7 +35,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CareTravel"
         tools:targetApi="31">
-        <activity
+        
+
+          <activity
             android:name=".make_Plan"
             android:exported="true">
             <intent-filter>
@@ -53,10 +55,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+       
+
+      <activity      
+            android:name=".material"
+            android:exported="false" />
+        <activity
+            android:name=".path"
+            android:exported="false" />
+        <activity
+            android:name=".home"
+            android:exported="false" />
         <activity
             android:name=".make_room"
             android:exported="false"
             android:parentActivityName=".activity_register" />
+
 
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
