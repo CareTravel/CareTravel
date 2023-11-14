@@ -1,0 +1,22 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <!--여행 등록하기 화면에서의 하늘색 방 버튼-->
+
+    <Button
+        android:id="@+id/register_register"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@drawable/room"
+        android:text="놀러가구싶다"
+        android:textStyle="bold"
+        android:gravity="start"
+        android:paddingTop="40dp"
+        android:paddingStart="20dp"
+        android:textSize="30dp"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+</LinearLayout>

@@ -17,55 +17,60 @@
             android:background="@drawable/baseline_arrow_back_ios_24"
             tools:ignore="SpeakableTextPresentCheck" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text="1/n 계산하기"
-        android:textColor="@color/black"
-        android:textSize="30sp"
-        android:layout_gravity="start"
-        android:padding="20dp"
-        android:textStyle="bold"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:padding="20dp"
+            android:text="1/n 계산하기"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
     </androidx.appcompat.widget.Toolbar>
 
     <TextView
+        android:id="@+id/calculate_text"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:background="@drawable/stroke"
         android:layout_margin="20dp"
+        android:background="@drawable/stroke"
         android:text="        님은               님에게                       원 입금하세요."
+        android:textAlignment="center"
         android:textColor="@color/black"
-        android:textSize="25dp"
-        android:textAlignment="center"/>
+        android:textSize="25sp"
+        tools:ignore="TextSizeCheck" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="40dp"
-        android:textColor="@color/black"
-        android:textSize="20dp"
-        android:text="계산 할 인: 명" />
+        <TextView
+            android:id="@+id/count_person"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="40dp"
+            android:text="계산 할 인원: 명"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
 
         <Button
+            android:id="@+id/calculate_Button"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:text="계산하기"
-            android:textSize="20dp"
             android:layout_marginHorizontal="40dp"
-            android:backgroundTint="#D9D9D9"/>
+            android:backgroundTint="#D9D9D9"
+            android:text="계산하기"
+            android:textSize="20sp" />
 
     </LinearLayout>
 
     <ScrollView
-        android:layout_weight="6"
         android:layout_width="match_parent"
-        android:layout_height="100dp">
+        android:layout_height="0dp"
+        android:layout_weight="6">
+
         <LinearLayout
             android:id="@+id/linearLayout_timetable"
             android:layout_width="match_parent"
@@ -76,54 +81,119 @@
                 android:id="@+id/gridlayout_timetable"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:columnCount="2"
-                android:rowCount="27"
+                android:layout_marginTop="30dp"
                 android:layout_marginBottom="30dp"
-                android:orientation="horizontal">
+                android:columnCount="2"
+                android:orientation="horizontal"
+                android:rowCount="27">
 
                 <TextView
-                    android:layout_width="50dp"
-                    android:layout_height="30dp"
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginTop="15dp"
+                    android:autoSizeMaxTextSize="20sp"
+                    android:autoSizeTextType="uniform"
                     android:background="@drawable/cell"
-                    android:text="월"
-                    android:layout_marginLeft="30dp"/>
+                    android:gravity="center"
+                    android:text="내역"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="50dp"
-                    android:layout_height="30dp"
-                    android:text="화"
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="15dp"
+                    android:autoSizeMaxTextSize="20sp"
+                    android:autoSizeTextType="uniform"
                     android:background="@drawable/cell"
-                    android:layout_marginHorizontal="30dp"
-                    android:layout_marginRight="30dp"/>
+                    android:gravity="center"
+                    android:text="가격"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold" />
 
+
+                <EditText
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:layout_marginLeft="30dp"
+                    android:background="@drawable/cell2"
+                    android:hint="내용 입력"
+                    android:inputType="text"
+                    android:textAlignment="center"
+                    android:textColorHint="#828282" />
+
+                <EditText
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/cell2"
+                    android:hint="내용 입력"
+                    android:inputType="text"
+                    android:textAlignment="center"
+                    android:textColorHint="#828282" />
 
 
             </GridLayout>
 
             <GridLayout
                 android:id="@+id/gridlayout_timetable2"
-                android:layout_width="wrap_content"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:columnCount="2"
-                android:rowCount="27"
+                android:layout_marginTop="30dp"
                 android:layout_marginBottom="30dp"
-                android:orientation="horizontal">
+                android:columnCount="2"
+                android:orientation="horizontal"
+                android:rowCount="27">
+
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="15dp"
+                    android:autoSizeMaxTextSize="20sp"
+                    android:autoSizeTextType="uniform"
+                    android:background="@drawable/cell"
+                    android:gravity="center"
+                    android:text="내역"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="16dp"
+                    android:autoSizeMaxTextSize="20sp"
+                    android:autoSizeTextType="uniform"
+                    android:background="@drawable/cell"
+                    android:gravity="center"
+                    android:text="가격"
+                    android:textAlignment="center"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:layout_marginLeft="30dp"
+                    android:background="@drawable/cell2"
+                    android:hint="내용 입력"
+                    android:inputType="text"
+                    android:textAlignment="center" />
+
+                <EditText
+                    android:layout_width="80dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/cell2"
+                    android:hint="내용 입력"
+                    android:inputType="text"
+                    android:textAlignment="center" />
 
             </GridLayout>
-
-            <TextView
-                android:layout_width="50dp"
-                android:layout_height="30dp"
-                android:background="@drawable/cell"
-                android:text="월"
-                android:layout_marginLeft="30dp"/>
-
-            <TextView
-                android:layout_width="50dp"
-                android:layout_height="30dp"
-                android:background="@drawable/cell"
-                android:text="화"
-                android:layout_marginRight="30dp"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
