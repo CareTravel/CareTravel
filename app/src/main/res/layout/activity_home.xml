@@ -46,8 +46,7 @@
         android:background="@drawable/stroke"
         android:text="준비물"
         android:textStyle="bold"
-        android:textSize="40dp"
-        tools:ignore="SpeakableTextPresentCheck" />
+        android:textSize="40dp" />
 
     <Button
         android:id="@+id/plan_Button"

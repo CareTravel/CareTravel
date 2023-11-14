@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,78 +23,61 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:padding="20dp"
             android:text="경로보기"
             android:textColor="@color/black"
             android:textSize="30sp"
-            android:layout_gravity="start"
-            android:padding="20dp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
     </androidx.appcompat.widget.Toolbar>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="위치 등록"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        android:textStyle="bold"
+        android:text="위치 등록"
+        android:textColor="@color/black"
         android:textSize="25sp"
-        android:textColor="@color/black"/>
+        android:textStyle="bold" />
 
-    <TableLayout
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/room"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="10dp"
-        android:stretchColumns="*">
-
-        <TableRow
-            android:id="@+id/placePerDay"
+    <ScrollView
+        android:id="@+id/path_scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:fillViewport="true">
+        <androidx.gridlayout.widget.GridLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="140dp"
+            app:orientation="vertical"
+            app:columnCount="2"
+            app:alignmentMode="alignBounds">
             <Button
-                android:id="@+id/day"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:background="@drawable/room"
-                android:text="1일차"
-                android:textSize="20sp"
-                android:textColor="@color/black"
-                >
+                android:id="@+id/open_map"
+                app:layout_rowSpan="2"
+                android:layout_marginStart="20dp">
             </Button>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="5"
-                android:orientation="vertical">
-                <EditText
-                    android:id="@+id/place"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:hint="장소를 입력하세요."
-                    android:textSize="15sp"
-                    android:inputType="text"
-                    android:maxLines="1">
-                </EditText>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:layout_height="150dp"
-                    android:id="@+id/recyclerView"
-                    android:scrollbars="vertical"
-                    android:layout_width="200dp">
-                </androidx.recyclerview.widget.RecyclerView>
-                <ProgressBar
-                    android:id="@+id/progressbar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
-                </ProgressBar>
-            </LinearLayout>
-        </TableRow>
-</TableLayout>
+            <EditText
+                android:hint="장소를 입력하세요">
+            </EditText>
+            <Button
+                android:id="@+id/open_map2"
+                app:layout_rowSpan="2"
+                android:layout_marginStart="20dp">
+            </Button>
+            <EditText
+                android:hint="장소를 입력하세요">
+            </EditText>
+        </androidx.gridlayout.widget.GridLayout>
+<!--        표 모양 바꾸는거 어떻게 생각해요..? 나 모태,,,,-->
+    </ScrollView>
 
-<!--    여기에다가도 지도 추가하고 새 화면에도 추가하나? 여기에는 기능없이 지도 보기만?-->
+
+    <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/map1"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>
