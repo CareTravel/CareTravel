@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-<!--    기능1 - 준비물 화면(메인)-->
+    <!--    기능1 - 준비물 화면(메인)-->
 
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
@@ -21,21 +21,32 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:padding="20dp"
             android:text="준비물"
             android:textColor="@color/black"
             android:textSize="30sp"
-            android:layout_gravity="start"
-            android:padding="20dp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
     </androidx.appcompat.widget.Toolbar>
 
     <Button
-        android:id="@+id/metarial_add"
+        android:id="@+id/material_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="+ 인원 추가하기"
+        android:textSize="25dp" />
+
+    <ScrollView
+        android:id="@+id/material_scrollView"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="30dp"
-        android:text="+ 추가하기"
-        android:textSize="30dp"
-        android:visibility="visible"/>
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+        <fragment
+            android:id="@+id/material_button_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </ScrollView>
 </LinearLayout>
