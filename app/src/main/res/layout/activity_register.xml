@@ -47,6 +47,10 @@
         android:iconifiedByDefault="false"
         android:queryHint="검색할 방을 입력하세요." />
 
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="6">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -54,9 +58,8 @@
         android:orientation="horizontal">
 
         <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_width="match_parent"
+            android:layout_height="480dp"/>
 
         <Button
             android:layout_width="70dp"
@@ -72,5 +75,5 @@
             android:textSize="50sp" />
 
     </RelativeLayout>
-
+</ScrollView>
 </LinearLayout>
