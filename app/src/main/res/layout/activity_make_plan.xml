@@ -100,14 +100,16 @@
                     android:textAlignment="center"
                     android:layout_marginTop="1dp"
                     android:layout_marginLeft="1dp"
-                    android:layout_marginRight="1dp" />
+                    android:layout_marginRight="1dp"
+                    android:inputType="text"/>
                 <EditText
                     android:layout_height="50dp"
                     android:hint="내용 입력"
                     android:background="#FFFFFF"
                     android:padding="3dp"
                     android:textAlignment="center"
-                    android:layout_marginTop="1dp"/>
+                    android:layout_marginTop="1dp"
+                    android:inputType="text"/>
             </TableRow>
             <TableRow
                 android:background="#000000">
@@ -125,14 +127,16 @@
                     android:textAlignment="center"
                     android:layout_marginTop="1dp"
                     android:layout_marginLeft="1dp"
-                    android:layout_marginRight="1dp"/>
+                    android:layout_marginRight="1dp"
+                    android:inputType="text"/>
                 <EditText
                     android:layout_height="50dp"
                     android:hint="내용 입력"
                     android:background="#FFFFFF"
                     android:padding="3dp"
                     android:textAlignment="center"
-                    android:layout_marginTop="1dp"/>
+                    android:layout_marginTop="1dp"
+                    android:inputType="text"/>
             </TableRow>
         </TableLayout>
     </ScrollView>
