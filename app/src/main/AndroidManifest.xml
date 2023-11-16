@@ -17,7 +17,8 @@
 
         <activity
             android:name=".activity_travel_info"
-            android:exported="true">
+            android:exported="true"
+            android:parentActivityName=".home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,7 +30,8 @@
 
         <activity
             android:name=".calculation"
-            android:exported="true">
+            android:exported="true"
+            android:parentActivityName=".home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,7 +41,8 @@
 
         <activity
             android:name=".make_Plan"
-            android:exported="true">
+            android:exported="true"
+            android:parentActivityName=".home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -59,7 +62,8 @@
 
         <activity
             android:name=".material"
-            android:exported="true">
+            android:exported="true"
+            android:parentActivityName=".home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -69,7 +73,8 @@
 
         <activity
             android:name=".path"
-            android:exported="true">
+            android:exported="true"
+            android:parentActivityName=".home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -79,7 +84,8 @@
 
         <activity
             android:name=".home"
-            android:exported="true">
+            android:exported="true"
+            android:parentActivityName=".activity_register">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -89,7 +95,8 @@
 
         <activity
             android:name=".make_room"
-            android:exported="true">
+            android:exported="true"
+            android:parentActivityName=".activity_register">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
