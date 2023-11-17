@@ -1,28 +1,28 @@
 package com.example.caretravel;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.Html;
-import android.view.View;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.caretravel.databinding.ActivityMakeRoomBinding;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 
 import android.app.DatePickerDialog;
 import android.widget.Toast;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class make_room extends AppCompatActivity {
+    private static final String TAG = "make_room";
+
     private ActivityMakeRoomBinding binding;
     private Calendar selectedDate;
 
@@ -33,29 +33,34 @@ public class make_room extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         FirebaseApp.initializeApp(this);
-
         selectedDate = Calendar.getInstance();
 
-        binding.calender1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog();
-            }
-        });
+        binding.calender1.setOnClickListener(v -> showDatePickerDialog());
+        binding.calender2.setOnClickListener(v -> showDatePickerDialogForSecondButton());
+        binding.registerButton.setOnClickListener(v -> {
+            // 사용자가 "방 만들기" 버튼을 클릭했을 때 Firestore에 데이터 추가
+            saveDataToFirestore();
 
-        binding.calender2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialogForSecondButton();
-            }
+            // Firestore에서 데이터를 가져오는 메서드 호출
+            fetchDataFromFirestore();
         });
+    }
+    private void fetchDataFromFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        binding.registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveDataToFirebase();
-            }
-        });
+        // "rooms" 컬렉션에서 데이터 가져오기
+        db.collection("rooms")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Log.d(TAG, document.getId() + " => " + document.getData());
+                            // 여기서 가져온 데이터를 사용하거나 처리할 수 있습니다.
+                        }
+                    } else {
+                        Log.d(TAG, "Error getting documents.", task.getException());
+                    }
+                });
     }
 
     private void showDatePickerDialog() {
@@ -113,35 +118,29 @@ public class make_room extends AppCompatActivity {
         return formattedDate;
     }
 
+    private void saveDataToFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private void saveDataToFirebase() {
-        // Firebase Realtime Database의 "rooms" 노드에 데이터 저장
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("rooms");
+        // 데이터 추가 예시
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", binding.registerName.getText().toString());
+        data.put("password", binding.registerPassword.getText().toString());
+        data.put("location", binding.registerLocation.getText().toString());
+        data.put("startDate", updateSelectedDateTextView());
+        data.put("endDate", updateSecondButtonDateTextView());
+        data.put("member", binding.registerMember.getText().toString());
+        data.put("memo", binding.registerMemo.getText().toString());
 
-        // 데이터 모델 클래스를 사용하거나 Map을 만들어서 데이터를 저장
-        String name = binding.registerName.getText().toString();
-        String password = binding.registerPassword.getText().toString();
-        String location = binding.registerLocation.getText().toString();
-
-        // 변경된 부분
-        String startDate = updateSelectedDateTextView();
-        String endDate = updateSecondButtonDateTextView();
-
-        String member = binding.registerMember.getText().toString();
-        String memo = binding.registerMemo.getText().toString();
-
-        if (startDate != null && endDate != null) {
-            // 데이터베이스에 저장할 데이터 생성
-            RoomData roomData = new RoomData(name, password, location, startDate, endDate, member, memo);
-
-            // "rooms" 노드에 데이터 추가
-            String roomId = databaseReference.push().getKey();
-            databaseReference.child(roomId).setValue(roomData.toMap());
-
-            Toast.makeText(make_room.this, "데이터가 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
-        } else {
-            // 날짜 파싱 오류 처리
-            Toast.makeText(make_room.this, "날짜 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show();
-        }
+        // "rooms" 컬렉션에 데이터 추가
+        db.collection("rooms")
+                .add(data)
+                .addOnSuccessListener(documentReference -> {
+                    // 추가 성공
+                    Toast.makeText(make_room.this, "데이터가 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    // 추가 실패
+                    Toast.makeText(make_room.this, "데이터 등록 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 }

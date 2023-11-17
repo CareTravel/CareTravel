@@ -1,5 +1,3 @@
-import javax.naming.Binding
-
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
@@ -60,5 +58,10 @@ dependencies {
     // Add the dependency for the Realtime Database library
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-database")
+    // Import the BoM for the Firebase platform
+
+    // Declare the dependency for the Cloud Firestore library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-firestore")
 
 }
