@@ -29,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.net.HttpCookie;
@@ -43,7 +44,23 @@ public class activity_register extends AppCompatActivity {
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private void getDocumentsWidthOrderData() {
+    private void fetchDataFromFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // "rooms" 컬렉션에서 데이터 가져오기
+        db.collection("rooms")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Log.d("TAG", document.getId() + " => " + document.getData());
+                            // 여기서 가져온 데이터를 사용하거나 처리할 수 있습니다.
+                        }
+                    } else {
+                        Log.d("TAG", "Error getting documents.", task.getException());
+                    }
+                });
+    }private void getDocumentsWidthOrderData() {
         db.collection("rooms").orderBy("name").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
