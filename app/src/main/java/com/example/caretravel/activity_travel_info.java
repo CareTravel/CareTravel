@@ -2,52 +2,64 @@ package com.example.caretravel;
 
 import android.os.Bundle;
 import android.widget.TextView;
-import androidx.annotation.Nullable;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.caretravel.databinding.ActivityTravelInfoBinding;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 public class activity_travel_info extends AppCompatActivity {
 
     private ActivityTravelInfoBinding binding;
+    private TextView memberTextView, locationTextView, dateTextView;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private ListenerRegistration listenerRegistration;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityTravelInfoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        TextView memberTextView = binding.member;
-        TextView locationTextView = binding.location;
-        TextView dateTextView = binding.Date;
+        memberTextView = binding.member;
+        locationTextView = binding.location;
+        dateTextView = binding.Date;
+
+        // 파이어스토어에서 데이터 가져오기
+        listenerRegistration = db.collection("rooms")
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    if (e != null) {
+                        // 에러 처리
+                        return;
+                    }
+
+                    if (queryDocumentSnapshots != null) {
+                        for (DocumentSnapshot document : queryDocumentSnapshots) {
+
+                            String memberValue = document.getString("member");
+                            String locationValue = document.getString("location");
+                            String startDateValue = document.getString("startDate");
+                            String endDateValue = document.getString("endDate");
+
+                            // startDate와 endDate를 합쳐서 dateTextView에 표시
+                            String combinedDate = "Start: " + startDateValue + "\nEnd: " + endDateValue;
 
 
-        // 파이어베이스에서 데이터 가져오기
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("rooms"); //getReference("저장된 노드이름")
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // 데이터가 변경될 때 호출되는 메서드
-                if (dataSnapshot.exists()) {
-                    // 데이터가 존재하면 값을 가져와서 텍스트 뷰에 설정
-                    String memberValue = dataSnapshot.child("member").getValue(String.class);
-                    String locationValue = dataSnapshot.child("location").getValue(String.class);
-                    String dateValue = dataSnapshot.child("date").getValue(String.class);
+                            memberTextView.setText(memberValue);
+                            locationTextView.setText(locationValue);
+                            dateTextView.setText(combinedDate);                        }
+                    }
+                });
+    }
 
-                    memberTextView.setText(memberValue);
-                    locationTextView.setText(locationValue);
-                    dateTextView.setText(dateValue);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // 데이터 가져오기를 실패한 경우 호출되는 메서드
-            }
-        });
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 액티비티가 종료될 때 ListenerRegistration을 해제합니다.
+        if (listenerRegistration != null) {
+            listenerRegistration.remove();
+        }
     }
 }
