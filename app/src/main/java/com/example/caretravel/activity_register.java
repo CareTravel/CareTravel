@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,6 +17,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
@@ -24,21 +29,10 @@ public class activity_register extends AppCompatActivity {
         toast.show();
     }
 
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    private void getDocumentsWidthOrderData() {
-        db.collection("rooms").orderBy("name").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                QuerySnapshot result = task.getResult();
-                List<DocumentSnapshot> documents = result.getDocuments();
-                for (DocumentSnapshot doc : documents) {
-                    Log.d("TAG", doc.getId() + ": " + doc.getData());
-                }
-            }
-        });
-    }
-
+    private ActivityRegisterBinding binding;
+    private TextView nameTextView;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private ListenerRegistration listenerRegistration;
 
 //    private DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
 //        @Override
@@ -69,6 +63,23 @@ public class activity_register extends AppCompatActivity {
             }
         });
 
+        nameTextView = (TextView) binding.addButtonView;
+        // 파이어스토어에서 데이터 가져오기
+        listenerRegistration = db.collection("rooms")
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    if (e != null) {
+                        // 에러 처리
+                        return;}
+
+                    if (queryDocumentSnapshots != null) {
+                        for (DocumentSnapshot document : queryDocumentSnapshots) {
+                            String nameValue = document.getString("name");
+                            nameTextView.setText(nameValue);
+                        }
+                    }
+                });
+
+
 //        binding.regButton.setOnClickListener(view -> {
 //            //custom dialog를 위한 layout xml 초기화
 //            LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -84,8 +95,16 @@ public class activity_register extends AppCompatActivity {
 //        });
     }
 //    public void createBtn(View view){
-//        LinearLayout View = (LinearLayout) findViewById(R.id.roomRegister_button);
-//        Button roombutton = new Button(this);
-//        View.addView(roombutton);
+//        if(uid != null) {
+//            LinearLayout View = (LinearLayout) findViewById(R.id.roomRegister_button);
+//            Button roombutton = new Button(this);
+//            View.addView(roombutton);
+//        }
+//    }
+//    if (rooms != null) {
+//        Intent intent = new Intent(this, MainActivity.class);
+//        intent.putExtra("USER_PROFILE", "email: " + user.getEmail() + "\n" + "uid: " + user.getUid());
+//
+//        startActivity(intent);
 //    }
 }
