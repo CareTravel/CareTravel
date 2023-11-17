@@ -25,7 +25,6 @@ public class RoomData {
         this.memo = memo;
     }
 
-    // Getter and setter methods (생략)
 
     public Map<String, Object> toMap() {
         Map<String, Object> map = new HashMap<>();

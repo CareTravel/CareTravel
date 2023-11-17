@@ -1,18 +1,15 @@
 package com.example.caretravel;
 
+import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.caretravel.databinding.ActivityMakeRoomBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-
-
-import android.app.DatePickerDialog;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,7 +18,6 @@ import java.util.Locale;
 import java.util.Map;
 
 public class make_room extends AppCompatActivity {
-    private static final String TAG = "make_room";
 
     private ActivityMakeRoomBinding binding;
     private Calendar selectedDate;
@@ -41,27 +37,9 @@ public class make_room extends AppCompatActivity {
             // 사용자가 "방 만들기" 버튼을 클릭했을 때 Firestore에 데이터 추가
             saveDataToFirestore();
 
-            // Firestore에서 데이터를 가져오는 메서드 호출
-            fetchDataFromFirestore();
         });
     }
-    private void fetchDataFromFirestore() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // "rooms" 컬렉션에서 데이터 가져오기
-        db.collection("rooms")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Log.d(TAG, document.getId() + " => " + document.getData());
-                            // 여기서 가져온 데이터를 사용하거나 처리할 수 있습니다.
-                        }
-                    } else {
-                        Log.d(TAG, "Error getting documents.", task.getException());
-                    }
-                });
-    }
 
     private void showDatePickerDialog() {
         int year = selectedDate.get(Calendar.YEAR);
@@ -98,6 +76,7 @@ public class make_room extends AppCompatActivity {
     }
 
 
+    @SuppressLint("SetTextI18n")
     private String updateSelectedDateTextView() {
         // 선택한 날짜를 텍스트 뷰에 표시
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -108,6 +87,7 @@ public class make_room extends AppCompatActivity {
         return formattedDate;
     }
 
+    @SuppressLint("SetTextI18n")
     private String updateSecondButtonDateTextView() {
         // 선택한 날짜를 텍스트 뷰에 표시
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -120,6 +100,7 @@ public class make_room extends AppCompatActivity {
 
     private void saveDataToFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String documentName = binding.registerName.getText().toString(); // registerName 필드에서 사용자 이름 가져오기
 
         // 데이터 추가 예시
         Map<String, Object> data = new HashMap<>();
@@ -133,10 +114,11 @@ public class make_room extends AppCompatActivity {
 
         // "rooms" 컬렉션에 데이터 추가
         db.collection("rooms")
-                .add(data)
-                .addOnSuccessListener(documentReference -> {
+                .document(documentName)
+                .set(data)
+                .addOnSuccessListener(aVoid -> {
                     // 추가 성공
-                    Toast.makeText(make_room.this, "데이터가 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(make_room.this, "방이 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
                     // 추가 실패
