@@ -16,7 +16,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "EmailPassword";
     private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
-
     public ActivityMainBinding binding;
 
     @Override
@@ -36,12 +37,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         initFirebaseAuth();
-        initializeCloudFirestore();
 
         EditText emailEditText = findViewById(R.id.email);
         EditText nameEditText = findViewById(R.id.name);
         EditText passwordEditText = findViewById(R.id.password);
 
+        //회원 가입 버튼
         binding.loginSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
                 signUp(email, name, password);
             }
         });
+
+        //로그인 버튼
         binding.loginSignin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,9 +70,6 @@ public class MainActivity extends AppCompatActivity {
     private void initFirebaseAuth() {
         mAuth = FirebaseAuth.getInstance();
     }
-    private void initializeCloudFirestore() {
-        db = FirebaseFirestore.getInstance();
-    }
 
     public void onStart(){
         super.onStart();
@@ -79,22 +79,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 회원 가입 함수
     private void signUp(String email, String name, String password){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        // 회원 가입 성공 했을 때
                         if(task.isSuccessful()){
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            String uid = user.getUid();
+                            //이름 프로필 업데이트
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(name)
+                                    .build();
 
-                            Map<String, Object> userMap = new HashMap<>();
-                            userMap.put("uid", uid);
-                            userMap.put("name", name);
-
-                            updateUI(user);
-                        } else {
+                            user.updateProfile(profileUpdates)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "User profile updated.");
+                                            }
+                                        }
+                                    });
+                            updateUI(user); // 화면 이동
+                        }
+                        // 회원 가입 실패 했을 때
+                        else {
                             Log.d(TAG, "signInWithEmail:failure");
                             Toast.makeText(getApplicationContext(), "회원 가입 실패했습니다.",
                                     Toast.LENGTH_SHORT).show();
@@ -103,16 +115,30 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    // 로그인 함수
     private void signIn(String email, String name, String password){
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                       if(task.isSuccessful()) {
+                       // 로그인 성공 했을 때
+                        if(task.isSuccessful()) {
                            Log.d(TAG, "signInWithEmail:success");
                            FirebaseUser user = mAuth.getCurrentUser();
-                           updateUI(user);
-                       } else {
+                            if(name.equals(user.getDisplayName())){
+                                updateUI(user);
+                            }
+                            // 이름 확인
+                            else {
+                                Log.d(TAG, "signInWithEmail:failure");
+                                Toast.makeText(getApplicationContext(), "로그인에 실패했습니다.",
+                                        Toast.LENGTH_SHORT).show();
+                                updateUI(null);
+                            }
+                       }
+                        // 로그인 실패 했을 때
+                        else {
                            Log.d(TAG, "signInWithEmail:failure");
                            Toast.makeText(getApplicationContext(), "로그인에 실패했습니다.",
                                    Toast.LENGTH_SHORT).show();
@@ -122,10 +148,10 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    // 화면 이동
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             Intent intent = new Intent(this, activity_register.class);
-            intent.putExtra("USER_PROFILE", "email: " + user.getEmail() + "\n" + "uid: " + user.getUid());
 
             startActivity(intent);
         }
