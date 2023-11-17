@@ -38,4 +38,7 @@ public class RoomData {
         map.put("memo", memo);
         return map;
     }
+
+    public String getName() { return name; }
+    public void setName(String name) { name = name; }
 }
