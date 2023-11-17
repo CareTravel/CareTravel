@@ -1,17 +1,39 @@
 package com.example.caretravel;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.collection.CircularArray;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.caretravel.databinding.ActivityRegisterBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.net.HttpCookie;
+import java.util.List;
+import java.util.Map;
 
 public class activity_register extends AppCompatActivity {
     private void showToast(String message) {
@@ -19,14 +41,30 @@ public class activity_register extends AppCompatActivity {
         toast.show();
     }
 
-    private DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            if (dialog == regDialog && which == DialogInterface.BUTTON_POSITIVE) {
-                showToast("(방이름)으로 방이 생성되었습니다.");
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    private void getDocumentsWidthOrderData() {
+        db.collection("rooms").orderBy("name").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                QuerySnapshot result = task.getResult();
+                List<DocumentSnapshot> documents = result.getDocuments();
+                for (DocumentSnapshot doc : documents) {
+                    Log.d("TAG", doc.getId() + ": " + doc.getData());
+                }
             }
-        }
-    };
+        });
+    }
+
+
+//    private DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+//        @Override
+//        public void onClick(DialogInterface dialog, int which) {
+//            if (dialog == regDialog && which == DialogInterface.BUTTON_POSITIVE) {
+//                showToast("${roomName}으로 방이 생성되었습니다.");
+//            }
+//        }
+//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,34 +75,34 @@ public class activity_register extends AppCompatActivity {
         binding.roomAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(activity_register.this,make_room.class));
+                startActivity(new Intent(activity_register.this, make_room.class));
             }
         });
 
         binding.myInformation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(activity_register.this,myPage.class));
+                startActivity(new Intent(activity_register.this, myPage.class));
             }
         });
 
-        binding.regButton.setOnClickListener(view -> {
-            //custom dialog를 위한 layout xml 초기화
-            LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-            View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
-
-            regDialog = new AlertDialog.Builder(this)
-                    .setView(dialogView)
-                    .setPositiveButton("확인", dialogListener)
-                    .setNegativeButton("취소", null)
-                    .create();
-
-            regDialog.show();
-        });
+//        binding.regButton.setOnClickListener(view -> {
+//            //custom dialog를 위한 layout xml 초기화
+//            LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+//            View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
+//
+//            regDialog = new AlertDialog.Builder(this)
+//                    .setView(dialogView)
+//                    .setPositiveButton("확인", dialogListener)
+//                    .setNegativeButton("취소", null)
+//                    .create();
+//
+//            regDialog.show();
+//        });
     }
-    public void createBtn(View view){
-        Button regButton = findViewById(R.id.register_register);
-
-//        if () 서버에서 방 가져오기
-    }
+//    public void createBtn(View view){
+//        LinearLayout View = (LinearLayout) findViewById(R.id.roomRegister_button);
+//        Button roombutton = new Button(this);
+//        View.addView(roombutton);
+//    }
 }

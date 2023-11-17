@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/roomRegister_button">
     <!--여행 등록하기 화면에서의 하늘색 방 버튼-->
 
     <Button
@@ -11,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:background="@drawable/room"
-        android:text="놀러가구싶다"
+        android:text="${roomName}"
         android:textStyle="bold"
         android:gravity="start"
         android:paddingTop="40dp"
