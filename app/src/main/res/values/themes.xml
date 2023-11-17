@@ -3,6 +3,8 @@
     <style name="Base.Theme.CareTravel" parent="Base.Theme.AppCompat.Light">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="windowNoTitle">true</item>
+
     </style>
 
     <style name="Theme.CareTravel" parent="Base.Theme.CareTravel" />
