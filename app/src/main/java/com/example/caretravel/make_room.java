@@ -2,6 +2,7 @@ package com.example.caretravel;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -102,27 +103,44 @@ public class make_room extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String documentName = binding.registerName.getText().toString(); // registerName 필드에서 사용자 이름 가져오기
 
-        // 데이터 추가 예시
-        Map<String, Object> data = new HashMap<>();
-        data.put("name", binding.registerName.getText().toString());
-        data.put("password", binding.registerPassword.getText().toString());
-        data.put("location", binding.registerLocation.getText().toString());
-        data.put("startDate", updateSelectedDateTextView());
-        data.put("endDate", updateSecondButtonDateTextView());
-        data.put("member", binding.registerMember.getText().toString());
-        data.put("memo", binding.registerMemo.getText().toString());
-
-        // "rooms" 컬렉션에 데이터 추가
+        // "rooms" 컬렉션에서 중복 방 이름 확인
         db.collection("rooms")
-                .document(documentName)
-                .set(data)
-                .addOnSuccessListener(aVoid -> {
-                    // 추가 성공
-                    Toast.makeText(make_room.this, "방이 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
+                .whereEqualTo("name", documentName)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (queryDocumentSnapshots.isEmpty()) {
+                        // 중복되지 않은 경우에만 추가
+                        Map<String, Object> data = new HashMap<>();
+                        data.put("name", documentName);
+                        data.put("password", binding.registerPassword.getText().toString());
+                        data.put("location", binding.registerLocation.getText().toString());
+                        data.put("startDate", updateSelectedDateTextView());
+                        data.put("endDate", updateSecondButtonDateTextView());
+                        data.put("member", binding.registerMember.getText().toString());
+                        data.put("memo", binding.registerMemo.getText().toString());
+
+                        db.collection("rooms")
+                                .document(documentName)
+                                .set(data)
+                                .addOnSuccessListener(aVoid -> {
+                                    // 추가 성공
+                                    Toast.makeText(make_room.this, "방이 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
+                                    // activity_register.xml로 화면 전환
+                                    Intent intent = new Intent(make_room.this, activity_register.class);
+                                    startActivity(intent);
+                                })
+                                .addOnFailureListener(e -> {
+                                    // 추가 실패
+                                    Toast.makeText(make_room.this, "데이터 등록 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                    } else {
+                        // 중복된 경우 사용자에게 알림
+                        Toast.makeText(make_room.this, "이미 존재하는 방 이름입니다. 다른 이름을 입력하세요.", Toast.LENGTH_SHORT).show();
+                    }
                 })
                 .addOnFailureListener(e -> {
-                    // 추가 실패
-                    Toast.makeText(make_room.this, "데이터 등록 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    // 쿼리 실패 처리
+                    Toast.makeText(make_room.this, "중복 확인 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 }

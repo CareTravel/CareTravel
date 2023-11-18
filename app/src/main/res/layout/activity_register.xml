@@ -60,15 +60,14 @@
         <View
             android:id="@+id/addButtonView"
             android:layout_width="match_parent"
-            android:layout_height="480dp"/>
-
+            android:layout_height="450dp"/>
         <Button
             android:id="@+id/roomAdd"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_alignParentRight="true"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="400dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
             android:background="@drawable/plus"
