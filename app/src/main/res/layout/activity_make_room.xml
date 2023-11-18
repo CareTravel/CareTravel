@@ -29,35 +29,68 @@
 
     </Toolbar>
 
-    <EditText
-        android:id="@+id/register_name"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:minHeight="48dp"
-        android:padding="10dp"
+        android:orientation="horizontal">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
         android:text="Name : "
-        android:inputType="text" />
+        android:textColor="@color/black"
+        android:textSize="17dp" />
 
-    <EditText
-        android:id="@+id/register_password"
+        <EditText
+            android:id="@+id/register_name"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:inputType="text"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:minHeight="48dp"
-        android:padding="10dp"
+        android:orientation="horizontal">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
         android:text="Password : "
-        android:inputType="textVisiblePassword"/>
+        android:textColor="@color/black"
+        android:textSize="17dp"/>
 
-    <EditText
-        android:id="@+id/register_location"
+        <EditText
+            android:id="@+id/register_password"
+            android:layout_width="270dp"
+            android:layout_height="match_parent"
+            android:inputType="textPassword"
+            tools:ignore="SpeakableTextPresentCheck" />
+    </LinearLayout>
+
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
         android:text="Location : "
-        android:minHeight="48dp"
-        android:layout_marginTop="30dp"
-        android:padding="10dp"
-        android:inputType="text"/>
+        android:textColor="@color/black"
+        android:textSize="17dp"/>
+
+        <EditText
+            android:id="@+id/register_location"
+            android:layout_width="280dp"
+            android:layout_height="match_parent"
+            android:inputType="text"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
 
 <LinearLayout
     android:layout_width="match_parent"
@@ -68,7 +101,7 @@
         android:id="@+id/date_picker_actions1"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:padding="20dp"
         android:text="시작 : "
         android:textColor="@color/black"
         android:textSize="17dp"
@@ -92,7 +125,7 @@
             android:id="@+id/date_picker_actions2"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:padding="20dp"
             android:text="종료 : "
             android:textColor="@color/black"
             android:textSize="17dp"
@@ -111,27 +144,52 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/black"
+        android:background="#AEA9A9"
         android:layout_margin="10dp"/>
 
-    <EditText
-        android:id="@+id/register_member"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Member : "
-        android:minHeight="48dp"
-        android:padding="10dp"
-        android:inputType="textPersonName"/>
+        android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/register_memo"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:text="Member : "
+        android:textColor="@color/black"
+        android:textSize="17dp"/>
+
+        <EditText
+            android:id="@+id/register_member"
+            android:layout_width="280dp"
+            android:layout_height="match_parent"
+            android:inputType="textPersonName"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
         android:text="Memo : "
-        android:minHeight="48dp"
-        android:layout_marginTop="30dp"
-        android:padding="10dp"
-        android:inputType="text"/>
+        android:textColor="@color/black"
+        android:textSize="17dp"/>
+
+        <EditText
+            android:id="@+id/register_memo"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:inputType="text"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/register_button"
