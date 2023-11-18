@@ -20,6 +20,7 @@ import java.util.Map;
 
 public class make_room extends AppCompatActivity {
 
+    private static final int REGISTER_ACTIVITY_REQUEST_CODE = 1;
     private ActivityMakeRoomBinding binding;
     private Calendar selectedDate;
 
@@ -37,7 +38,6 @@ public class make_room extends AppCompatActivity {
         binding.registerButton.setOnClickListener(v -> {
             // 사용자가 "방 만들기" 버튼을 클릭했을 때 Firestore에 데이터 추가
             saveDataToFirestore();
-
         });
     }
 
@@ -125,9 +125,10 @@ public class make_room extends AppCompatActivity {
                                 .addOnSuccessListener(aVoid -> {
                                     // 추가 성공
                                     Toast.makeText(make_room.this, "방이 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
+
                                     // activity_register.xml로 화면 전환
                                     Intent intent = new Intent(make_room.this, activity_register.class);
-                                    startActivity(intent);
+                                    startActivityForResult(intent, REGISTER_ACTIVITY_REQUEST_CODE);
                                 })
                                 .addOnFailureListener(e -> {
                                     // 추가 실패
