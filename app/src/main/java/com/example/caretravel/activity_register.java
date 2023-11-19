@@ -37,15 +37,37 @@ public class activity_register extends AppCompatActivity {
     private ActivityRegisterBinding binding;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    public void createBtn(View view) {
 
-    private DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            if (dialog == regDialog && which == DialogInterface.BUTTON_POSITIVE) {
-                showToast("으로 방이 생성되었습니다.");
-            }
-        }
-    };
+        String documentName = getIntent().getStringExtra("registerName");
+        db.collection("rooms")
+                .whereEqualTo("name", documentName)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (queryDocumentSnapshots.isEmpty()) {
+                        //방없으면 그냥 아무것도 없는 화면
+                    } else {
+                        //방 있으면 버튼 만들고 이름 넣기
+                        String roomName = documentName;
+
+                        LinearLayout View = (LinearLayout) findViewById(R.id.roomRegister_button);
+                        Button roomButton = new Button(this);
+                        roomButton.setText(documentName);
+                        View.addView(roomButton);
+
+                    }
+                });
+    }
+
+
+//    private DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+//        @Override
+//        public void onClick(DialogInterface dialog, int which) {
+//            if (dialog == regDialog && which == DialogInterface.BUTTON_POSITIVE) {
+//                showToast("으로 방이 생성되었습니다.");
+//            }
+//        }
+//    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,38 +89,19 @@ public class activity_register extends AppCompatActivity {
             }
         });
 
-        binding.roomButton.setOnClickListener(view -> {
-            //custom dialog를 위한 layout xml 초기화
-            LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-            View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
-
-            AlertDialog regDialog = new AlertDialog.Builder(this)
-                    .setView(dialogView)
-                    .setPositiveButton("확인", dialogListener)
-                    .setNegativeButton("취소", null)
-                    .create();
-
-            regDialog.show();
-        });
+//        binding.roomButton.setOnClickListener(view -> {
+//            //custom dialog를 위한 layout xml 초기화
+//            LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+//            View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
+//
+//            AlertDialog regDialog = new AlertDialog.Builder(this)
+//                    .setView(dialogView)
+//                    .setPositiveButton("확인", dialogListener)
+//                    .setNegativeButton("취소", null)
+//                    .create();
+//
+//            regDialog.show();
+//        });
     }
-    public void createBtn(View view) {
-        String documentName = binding.registerName.getText().toString();
-        db.collection("rooms")
-                .whereEqualTo("name", documentName)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (queryDocumentSnapshots.isEmpty()) {
-                        //방없으면 그냥 아무것도 없는 화면
-                    } else {
-                        //방 있으면 버튼 만들고 이름 넣기
-                        String roomName = documentName;
 
-                        LinearLayout View = (LinearLayout) findViewById(R.id.roomRegister_button);
-                        Button roombutton = new Button(this);
-                        roombutton.setText(documentName);
-                        View.addView(roombutton);
-
-                    }
-                });
-    }
 }
