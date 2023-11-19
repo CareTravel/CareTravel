@@ -1,17 +1,20 @@
 package com.example.caretravel;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.example.caretravel.databinding.ActivityMainBinding;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.caretravel.databinding.ActivityMyPageBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class myPage extends AppCompatActivity {
     public ActivityMyPageBinding binding;
@@ -44,6 +47,21 @@ public class myPage extends AppCompatActivity {
                 finish();
             }
         });
+
+        // 정보수정 버튼
+        binding.changeInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeInfo();
+            }
+        });
+
+        binding.backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(myPage.this, activity_register.class));
+            }
+        });
     }
     private void initFirebaseAuth() {
         mAuth = FirebaseAuth.getInstance();
@@ -64,5 +82,36 @@ public class myPage extends AppCompatActivity {
         else
             Log.d(TAG, "signOut:failure");
     }
+
+    // 정보수정 함수
+    private void changeInfo(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        // 이름 변경
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(binding.mypageName.getText().toString())
+                .build();
+
+        user.updateProfile(profileUpdates)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "name updated.");
+                        }
+                    }
+                });
+        // 이메일 변경
+        user.updateEmail(binding.mypageEmail.getText().toString())
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "User email address updated.");
+                        }
+                    }
+                });
+
+    }
+
 
 }
