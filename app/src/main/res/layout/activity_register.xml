@@ -47,33 +47,26 @@
         android:iconifiedByDefault="false"
         android:queryHint="검색할 방을 입력하세요." />
 
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="6">
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
-        <View
-            android:id="@+id/addButtonView"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="450dp"/>
+            android:layout_height="match_parent"
+            android:layout_above="@+id/roomAdd" />
+
         <Button
             android:id="@+id/roomAdd"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_alignParentRight="true"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="400dp"
+            android:layout_alignParentBottom="true"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
             android:background="@drawable/plus"
             android:text="+"
             android:textSize="50sp" />
-
-    </RelativeLayout>
-</ScrollView>
+    </RelativeLayout>>
 </LinearLayout>
