@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.caretravel.databinding.ActivityMakeRoomBinding;
@@ -23,6 +25,21 @@ public class make_room extends AppCompatActivity {
     private ActivityMakeRoomBinding binding;
     private Calendar selectedDate;
 
+    // Add the ActivityResultLauncher
+    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    // 등록 성공에 대한 처리
+                    Toast.makeText(this, "방이 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
+                } else {
+                    // 등록 실패 또는 취소에 대한 처리
+                    Toast.makeText(this, "방 등록이 실패하거나 취소되었습니다.", Toast.LENGTH_SHORT).show();
+                }
+            }
+    );
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +54,6 @@ public class make_room extends AppCompatActivity {
         binding.registerButton.setOnClickListener(v -> {
             // 사용자가 "방 만들기" 버튼을 클릭했을 때 Firestore에 데이터 추가
             saveDataToFirestore();
-
         });
     }
 
@@ -101,9 +117,11 @@ public class make_room extends AppCompatActivity {
 
     private void saveDataToFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String documentName = binding.registerName.getText().toString(); // registerName 필드에서 사용자 이름 가져오기
+        String documentName = binding.registerName.getText().toString();
 
-        // "rooms" 컬렉션에서 중복 방 이름 확인
+        // 현재 시간을 가져와서 저장
+        long currentTimeMillis = System.currentTimeMillis();
+
         db.collection("rooms")
                 .whereEqualTo("name", documentName)
                 .get()
@@ -119,14 +137,19 @@ public class make_room extends AppCompatActivity {
                         data.put("member", binding.registerMember.getText().toString());
                         data.put("memo", binding.registerMemo.getText().toString());
 
+                        // 현재 시간을 데이터에 추가
+                        data.put("timestamp", currentTimeMillis);
+
                         db.collection("rooms")
                                 .document(documentName)
                                 .set(data)
                                 .addOnSuccessListener(aVoid -> {
                                     // 추가 성공
                                     Toast.makeText(make_room.this, "방이 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
+
                                     // activity_register.xml로 화면 전환
                                     Intent intent = new Intent(make_room.this, activity_register.class);
+
                                     intent.putExtra("roomName",documentName);
                                     setResult(RESULT_OK,intent);
                                     finish();
@@ -145,4 +168,5 @@ public class make_room extends AppCompatActivity {
                     Toast.makeText(make_room.this, "중복 확인 실패: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
 }
