@@ -48,11 +48,12 @@
         android:queryHint="검색할 방을 입력하세요." />
 
     <RelativeLayout
+        android:id="@+id/relativeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+            android:id="@+id/addButtonView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/roomAdd" />
