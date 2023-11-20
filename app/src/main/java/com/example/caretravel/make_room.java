@@ -127,7 +127,9 @@ public class make_room extends AppCompatActivity {
                                     Toast.makeText(make_room.this, "방이 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
                                     // activity_register.xml로 화면 전환
                                     Intent intent = new Intent(make_room.this, activity_register.class);
-                                    startActivity(intent);
+                                    intent.putExtra("roomName",documentName);
+                                    setResult(RESULT_OK,intent);
+                                    finish();
                                 })
                                 .addOnFailureListener(e -> {
                                     // 추가 실패
