@@ -1,5 +1,6 @@
 package com.example.caretravel;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +12,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,36 +35,11 @@ import java.util.List;
 import java.util.Map;
 
 public class activity_register extends AppCompatActivity {
+    private ActivityRegisterBinding binding;
     private void showToast(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();
     }
-
-    private ActivityRegisterBinding binding;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    public void createBtn(View view) {
-
-        String documentName = getIntent().getStringExtra("registerName");
-        db.collection("rooms")
-                .whereEqualTo("name", documentName)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (queryDocumentSnapshots.isEmpty()) {
-                        //방없으면 그냥 아무것도 없는 화면
-                    } else {
-                        //방 있으면 버튼 만들고 이름 넣기
-                        String roomName = documentName;
-
-                        LinearLayout View = (LinearLayout) findViewById(R.id.roomRegister_button);
-                        Button roomButton = new Button(this);
-                        roomButton.setText(documentName);
-                        View.addView(roomButton);
-
-                    }
-                });
-    }
-
 
 //    private DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
 //        @Override
@@ -72,14 +53,14 @@ public class activity_register extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityRegisterBinding binding = ActivityRegisterBinding.inflate(getLayoutInflater());
+        binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         binding.roomAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(activity_register.this, make_room.class));
-            }
+                Intent intent = new Intent(activity_register.this, make_room.class);
+                startActivityResult.launch(intent);}
         });
 
         binding.myInformation.setOnClickListener(new View.OnClickListener() {
@@ -88,6 +69,8 @@ public class activity_register extends AppCompatActivity {
                 startActivity(new Intent(activity_register.this, myPage.class));
             }
         });
+
+
 
 //        binding.roomButton.setOnClickListener(view -> {
 //            //custom dialog를 위한 layout xml 초기화
@@ -103,5 +86,33 @@ public class activity_register extends AppCompatActivity {
 //            regDialog.show();
 //        });
     }
+
+    ActivityResultLauncher<Intent> startActivityResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == RESULT_OK) {
+                        String roomName = getIntent().getStringExtra("documentName");
+                        Log.d("phj","버튼 만들면됨");
+
+//                        LayoutInflater inflater = LayoutInflater.from(activity_register.this);
+//                        View view = inflater.inflate(R.layout.room_button, null);
+//                        View addbuttonview = findViewById(R.id.addButtonView);
+//                        View.addView(addbuttonview);
+
+
+//                        View view = (View) findViewById(R.id.addButtonView);
+//                        Button roomButton = new Button(this);
+//                        roomButton.setText(roomName);
+//                        view.addView(roomButton);
+
+                        LinearLayout View = (LinearLayout) findViewById(R.id.roomRegister_button);
+                        Button roomButton = new Button(activity_register.this);
+                        roomButton.setText(roomName);
+                        View.addView(roomButton);
+                    }
+                }
+            });
 
 }

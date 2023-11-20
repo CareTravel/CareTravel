@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:background="@drawable/room"
-        android:text="${roomName}"
         android:textStyle="bold"
         android:gravity="start"
         android:paddingTop="40dp"

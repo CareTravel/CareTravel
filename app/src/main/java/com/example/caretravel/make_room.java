@@ -149,8 +149,10 @@ public class make_room extends AppCompatActivity {
 
                                     // activity_register.xml로 화면 전환
                                     Intent intent = new Intent(make_room.this, activity_register.class);
-                                    // startActivityForResult 대신에 activityResultLauncher.launch(intent)를 사용합니다.
-                                    activityResultLauncher.launch(intent);
+
+                                    intent.putExtra("roomName",documentName);
+                                    setResult(RESULT_OK,intent);
+                                    finish();
                                 })
                                 .addOnFailureListener(e -> {
                                     // 추가 실패
