@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,31 +29,33 @@ public class myPage extends AppCompatActivity {
         binding = ActivityMyPageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+
         initFirebaseAuth();
         FirebaseUser user = mAuth.getCurrentUser();
 
-        // 회원 정보 불러오기
-        EditText myPage_name = findViewById(R.id.name);
-        EditText myPage_email = findViewById(R.id.email);
-        String name = user.getDisplayName();
-        String email = user.getEmail();
-        myPage_name.setText(name);
-        myPage_email.setText(email);
+        //회원 정보 불러오기
+        EditText myPage_name = (EditText) findViewById(R.id.mypage_name);
+        EditText myPage_email = (EditText) findViewById(R.id.mypage_email);
+        String userName = user.getDisplayName();
+        String userEmail = user.getEmail();
+        myPage_name.setText(userName);
+        myPage_email.setText(userEmail);
+
 
         // 로그아웃 버튼
         binding.logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signOut();
-                finish();
+                startActivity(new Intent(myPage.this, MainActivity.class));
             }
         });
 
         // 정보수정 버튼
-        binding.changeInfo.setOnClickListener(new View.OnClickListener() {
+       binding.changeInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeInfo();
+                changeInfo(user);
             }
         });
 
@@ -66,10 +69,10 @@ public class myPage extends AppCompatActivity {
     private void initFirebaseAuth() {
         mAuth = FirebaseAuth.getInstance();
     }
-    public void onStart(){
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-    }
+//    public void onStart(){
+//        super.onStart();
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//    }
 
     // 로그아웃 함수
     private void signOut() {
@@ -84,8 +87,8 @@ public class myPage extends AppCompatActivity {
     }
 
     // 정보수정 함수
-    private void changeInfo(){
-        FirebaseUser user = mAuth.getCurrentUser();
+    private void changeInfo(FirebaseUser user){
+//        FirebaseUser user = mAuth.getCurrentUser();
         // 이름 변경
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(binding.mypageName.getText().toString())
@@ -110,6 +113,8 @@ public class myPage extends AppCompatActivity {
                         }
                     }
                 });
+        Toast.makeText(getApplicationContext(), "정보 수정이 완료되었습니다.",
+                Toast.LENGTH_SHORT).show();
 
     }
 
