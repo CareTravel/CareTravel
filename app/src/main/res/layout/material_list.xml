@@ -53,6 +53,13 @@
             android:textColor="@color/black"
             android:textSize="30sp"
             android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/material_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="120dp"
+            android:text="저장하기" />
     </LinearLayout>
 
     <ImageView
