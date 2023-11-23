@@ -156,5 +156,16 @@
             android:padding="10dp"
             android:background="@drawable/room"/>
 
+        <Button
+            android:id="@+id/plan_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:layout_marginLeft="160dp"
+            android:layout_marginBottom="20dp"
+            android:padding="10dp"
+            android:text="저장하기"
+            android:background="@drawable/room"/>
+
     </LinearLayout>
 </LinearLayout>
