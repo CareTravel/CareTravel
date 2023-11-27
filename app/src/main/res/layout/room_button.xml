@@ -13,8 +13,7 @@
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:gravity="start"
-
-        android:textSize="30dp"/>
-<!--    android:paddingTop="40dp"-->
-<!--    android:paddingStart="20dp"-->
+        android:background="@drawable/room"
+        android:textSize="20sp"
+        android:paddingStart="20dp"/>
 </LinearLayout>
