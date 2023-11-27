@@ -7,16 +7,14 @@
     android:id="@+id/roomRegister_button">
     <!--여행 등록하기 화면에서의 하늘색 방 버튼-->
 
-    <Button
-        android:id="@+id/register_register"
+    <TextView
+        android:id="@+id/buttonText"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:background="@drawable/room"
+        android:layout_height="wrap_content"
         android:textStyle="bold"
         android:gravity="start"
-        android:paddingTop="40dp"
-        android:paddingStart="20dp"
-        android:textSize="30dp"
-        tools:ignore="SpeakableTextPresentCheck" />
 
+        android:textSize="30dp"/>
+<!--    android:paddingTop="40dp"-->
+<!--    android:paddingStart="20dp"-->
 </LinearLayout>
