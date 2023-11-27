@@ -5,22 +5,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.caretravel.databinding.ActivityMaterialBinding;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class material extends AppCompatActivity {
-    ActivityMaterialBinding binding;
+
+
+    public ActivityMaterialBinding binding;
     AlertDialog nameDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_material);
+        binding = ActivityMaterialBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // 뒤로가기 버튼
         binding.backButton.setOnClickListener(new View.OnClickListener() {
@@ -43,16 +47,24 @@ public class material extends AppCompatActivity {
                         EditText name = nameDialog.findViewById(R.id.list_name);
                         String listName = name.getText().toString();
                         nameData(listName);
+                        addButton(listName);
                     }
                 }
             });
             builder.setNegativeButton("취소", null);
-
+            nameDialog = builder.create();
+            nameDialog.show();
         });
     }
-    private void nameData(String name){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private void nameData(String name) {
 
-
+    }
+    private void addButton(String name){
+        LinearLayout view = findViewById(R.id.linearlayout);
+        Button listButton = new Button(material.this);
+        listButton.setText(name + "'s list");
+        listButton.setTextSize(30);
+        listButton.setHeight(300);
+        view.addView(listButton);
     }
 }
