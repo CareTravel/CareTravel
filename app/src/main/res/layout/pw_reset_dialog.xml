@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="비밀번호 재설정"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:layout_marginTop="32dp"
+        android:layout_marginLeft="32dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="가입한 이메일 주소로 비밀번호 재설정 링크 전송"
+        android:textSize="15sp"
+        android:layout_marginTop="32dp"
+        android:layout_marginLeft="32dp" />
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="E-mail"
+            android:textSize="20dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginLeft="32dp"/>
+        <EditText
+            android:id="@+id/email_reset"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="이메일을 입력하세요"
+            android:padding="10dp"
+            android:background="#D9D9D9"
+            android:layout_marginTop="32dp"
+            android:layout_marginLeft="10dp"/>
+    </LinearLayout>
+<!--    <LinearLayout-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:layout_marginTop="15dp"-->
+<!--        android:layout_gravity="right">-->
+<!--        <Button-->
+<!--            android:id="@+id/positive"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="확인"-->
+<!--            android:textSize="20dp"/>-->
+<!--        <Button-->
+<!--            android:id="@+id/negative"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="취소"-->
+<!--            android:layout_marginRight="20dp"-->
+<!--            android:textSize="20dp"/>-->
+<!--    </LinearLayout>-->
+
+
+</LinearLayout>
