@@ -54,7 +54,8 @@
             android:id="@+id/addButtonView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/roomAdd_Btn" />
+            android:layout_above="@+id/roomAdd_Btn"
+            android:orientation="vertical"/>
 
         <Button
             android:id="@+id/roomAdd_Btn"
