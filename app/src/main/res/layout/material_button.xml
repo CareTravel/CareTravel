@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:background="@drawable/room"
-        android:text="'s List"
         android:gravity="start"
         android:paddingTop="40dp"
         android:paddingStart="20dp"
