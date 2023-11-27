@@ -84,6 +84,7 @@
             android:textSize="15dp"
             android:padding="8dp"
             android:inputType="textEmailAddress"
+            android:enabled="false"
             tools:ignore="SpeakableTextPresentCheck"/>
     </LinearLayout>
     <LinearLayout
@@ -104,7 +105,7 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:background="#BCD1F1"
-            android:text="정보수정"
+            android:text="이름 변경"
             android:textSize="20dp"
             android:layout_marginLeft="25dp"/>
 

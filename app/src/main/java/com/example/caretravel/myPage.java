@@ -103,20 +103,8 @@ public class myPage extends AppCompatActivity {
                         }
                     }
                 });
-        // 이메일 변경
-        user.updateEmail(binding.mypageEmail.getText().toString())
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "User email address updated.");
-                        }
-                    }
-                });
-        Toast.makeText(getApplicationContext(), "정보 수정이 완료되었습니다.",
+
+        Toast.makeText(getApplicationContext(), "이름이 변경되었습니다.",
                 Toast.LENGTH_SHORT).show();
-
     }
-
-
 }
