@@ -1,6 +1,8 @@
 package com.example.caretravel;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +24,14 @@ public class activity_travel_info extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityTravelInfoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // 뒤로가기 버튼
+        binding.backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(activity_travel_info.this, home.class));
+            }
+        });
 
         memberTextView = binding.member;
         locationTextView = binding.location;

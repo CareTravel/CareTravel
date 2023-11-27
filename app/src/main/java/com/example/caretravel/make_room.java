@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -45,6 +46,14 @@ public class make_room extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMakeRoomBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // 뒤로가기 버튼
+        binding.backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(make_room.this, activity_register.class));
+            }
+        });
 
         FirebaseApp.initializeApp(this);
         selectedDate = Calendar.getInstance();
