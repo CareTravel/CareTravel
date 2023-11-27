@@ -54,38 +54,55 @@
         android:layout_marginLeft="180dp"
         android:text="저장하기" />
 </LinearLayout>
-
-    <ScrollView
-        android:id="@+id/path_scrollView"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="140dp"
-        android:fillViewport="true">
-        <androidx.gridlayout.widget.GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            app:orientation="vertical"
-            app:columnCount="2"
-            app:alignmentMode="alignBounds">
-            <Button
-                android:id="@+id/open_map"
-                app:layout_rowSpan="2"
-                android:layout_marginStart="20dp">
-            </Button>
-            <EditText
-                android:hint="장소를 입력하세요">
-            </EditText>
-            <Button
-                android:id="@+id/open_map2"
-                app:layout_rowSpan="2"
-                android:layout_marginStart="20dp">
-            </Button>
-            <EditText
-                android:hint="장소를 입력하세요">
-            </EditText>
-        </androidx.gridlayout.widget.GridLayout>
-<!--        표 모양 바꾸는거 어떻게 생각해요..? 나 모태,,,,-->
-    </ScrollView>
+        android:layout_height="match_parent">
 
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="장소를 입력하세요.  "
+        android:maxLines="1"
+        android:inputType="text"
+        tools:ignore="MissingConstraints" />
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="검색"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="300dp"
+            tools:layout_editor_absoluteY="0dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/pathRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scrollbars="vertical"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="47dp" />
+
+        <TextView
+            android:id="@+id/empty_result_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="160dp" />
+
+        <ProgressBar
+            android:id="@+id/progress_circular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="181dp"
+            tools:layout_editor_absoluteY="112dp" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <fragment xmlns:map="http://schemas.android.com/apk/res-auto"
         android:id="@+id/map1"

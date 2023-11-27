@@ -5,8 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,10 +54,10 @@
             android:id="@+id/addButtonView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/roomAdd" />
+            android:layout_above="@+id/roomAdd_Btn" />
 
         <Button
-            android:id="@+id/roomAdd"
+            android:id="@+id/roomAdd_Btn"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_alignParentRight="true"
@@ -69,5 +67,5 @@
             android:background="@drawable/plus"
             android:text="+"
             android:textSize="50sp" />
-    </RelativeLayout>>
+    </RelativeLayout>
 </LinearLayout>
