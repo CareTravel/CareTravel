@@ -38,16 +38,20 @@ public class activity_register extends AppCompatActivity {
     }
 
     //String roomName = getIntent().getStringExtra("roomName");
-
-//    //aaaaaaa
-//    private DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
-//        @Override
-//        public void onClick(DialogInterface dialog, int which) {
-//            if (dialog == regDialog && which == DialogInterface.BUTTON_POSITIVE) {
-//                showToast(roomName + "으로 방이 생성되었습니다.");
-//            }
-//        }
-//    };
+    //aaaaaaa
+    private DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+        //String serverPsd = getIntent().getStringExtra("password");
+        //@SuppressLint("ResourceType")
+        //String userPsd = (String) getText(R.id.writePassword);
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            //if (userPsd.equals(serverPsd)) {
+                showToast( "방으로 들어왔습니다.");
+                startActivity(new Intent(activity_register.this, home.class));
+            //}
+            //else showToast("비밀번호가 틀렸습니다. 비밀번호를 확인하거나, 방 이름이 맞는지 다시 확인해 주세요.");
+        }
+    };
 //    //aaaaaa
 
     ArrayList<String> list = new ArrayList<>();
@@ -61,63 +65,80 @@ public class activity_register extends AppCompatActivity {
         ActivityResultLauncher<Intent> startActivityResult = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
-                    String roomName = getIntent().getStringExtra("name");
                     @SuppressLint("NotifyDataSetChanged")
                     @Override
                     public void onActivityResult(ActivityResult result) {
-//                        String roomName = getIntent().getStringExtra("roomName");
                         if (result.getResultCode() == RESULT_OK) {
-                            //String roomName = getIntent().getStringExtra("roomName");
-//                            Log.d("phj", "result 돌아옴" + roomName);
-//                            list.add(roomName);
-//                            Log.d("phj", "리스트에 데이터 추가" + list);
-//
-//                            RecyclerView recyclerView = findViewById(R.id.addButtonView);
-//                            recyclerView.setLayoutManager(new LinearLayoutManager(activity_register.this));
-//                            // LayoutManager 설정
-//
-//                            MyAdapter myAdapter = new MyAdapter(list);
-//                            Log.d("phj", "어댑터 속 " + list + list.size());
-//                            recyclerView.setAdapter(myAdapter); //어댑터 설정
-//
-//                            myAdapter.notifyDataSetChanged();
+                            Intent data = result.getData();
+                            if (data != null) {
+                                String roomName = data.getStringExtra("name");
+                                Log.d("phj", "result 돌아옴" + roomName);
+                                list.add(roomName);
+                                Log.d("phj", "리스트에 데이터 추가" + list);
+                            }
+
+                            RecyclerView recyclerView = findViewById(R.id.addButtonView);
+                            recyclerView.setLayoutManager(new LinearLayoutManager(activity_register.this));
+                            // LayoutManager 설정
+
+                            MyAdapter myAdapter = new MyAdapter(list);
+                            Log.d("phj", "어댑터 속 " + list + list.size());
+                            recyclerView.setAdapter(myAdapter); //어댑터 설정
+
+                            myAdapter.notifyDataSetChanged();
+
+                            myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(View v, int position) {
+                                    LayoutInflater inflater = (LayoutInflater) getSystemService(activity_register.LAYOUT_INFLATER_SERVICE);
+                                    View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
+
+                                    AlertDialog regDialog = new AlertDialog.Builder(activity_register.this)
+                                            .setView(dialogView)
+                                            .setPositiveButton("확인", dialogListener)
+                                            .setNegativeButton("취소", null)
+                                            .create();
+
+                                    regDialog.show();
+                                }
+                            });
+                            //어댑터
 
                         }
                     }
                 });
 
-        ArrayList<String> list = new ArrayList<>();
-        for (int i=0; i<100; i++) {
-            list.add(String.format("TEXT %d", i)) ;
-        }
+//        테스트용
+//        ArrayList<String> list = new ArrayList<>();
+//        for (int i=0; i<100; i++) {
+//            list.add(String.format("TEXT %d", i)) ;
+//        }
+//
+//        RecyclerView recyclerView = findViewById(R.id.addButtonView);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(activity_register.this));
+//        // LayoutManager 설정
+//
+//
+//        MyAdapter myAdapter = new MyAdapter(list);
+//        recyclerView.setAdapter(myAdapter); //어댑터 설정
+//        Log.d("phj", "어댑터 속 "+list.size());
 
-        RecyclerView recyclerView = findViewById(R.id.addButtonView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(activity_register.this));
-        // LayoutManager 설정
 
-
-        MyAdapter myAdapter = new MyAdapter(list);
-        recyclerView.setAdapter(myAdapter); //어댑터 설정
-        Log.d("phj", "어댑터 속 "+list.size());
-
-        myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View v, int position) {
-                //static void showpsdDialog() {
-//            LayoutInflater inflater = (LayoutInflater) activity_register..getSystemService(activity_register.LAYOUT_INFLATER_SERVICE);
+//        myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(View v, int position) {
+//            LayoutInflater inflater = (LayoutInflater) getSystemService(activity_register.LAYOUT_INFLATER_SERVICE);
 //            View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
 //
-//            AlertDialog regDialog = new AlertDialog.Builder(activity_register.class.newInstance())
+//            AlertDialog regDialog = new AlertDialog.Builder(activity_register.this)
 //                    .setView(dialogView)
-//                    .setPositiveButton("확인", null)
+//                    .setPositiveButton("확인", dialogListener)
 //                    .setNegativeButton("취소", null)
 //                    .create();
 //
 //            regDialog.show();
-//        }
-                startActivity(new Intent(activity_register.this, home.class));
-            }
-        });
+//            }
+//        });
 
         binding.roomAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
