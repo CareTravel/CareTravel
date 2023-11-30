@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -149,7 +150,7 @@ public class make_room extends AppCompatActivity {
 
                                     // activity_register.xml로 화면 전환
                                     Intent intent = new Intent(make_room.this, activity_register.class);
-                                    intent.putExtra("roomName",documentName);
+                                    intent.putExtra("name",documentName);
                                     setResult(RESULT_OK,intent);
                                     finish();
                                 })
