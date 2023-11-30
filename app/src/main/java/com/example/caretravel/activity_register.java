@@ -37,8 +37,6 @@ public class activity_register extends AppCompatActivity {
         toast.show();
     }
 
-    //String roomName = getIntent().getStringExtra("roomName");
-    //aaaaaaa
     private DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
         //String serverPsd = getIntent().getStringExtra("password");
         //@SuppressLint("ResourceType")
@@ -52,7 +50,6 @@ public class activity_register extends AppCompatActivity {
             //else showToast("비밀번호가 틀렸습니다. 비밀번호를 확인하거나, 방 이름이 맞는지 다시 확인해 주세요.");
         }
     };
-//    //aaaaaa
 
     ArrayList<String> list = new ArrayList<>();
 
@@ -108,38 +105,6 @@ public class activity_register extends AppCompatActivity {
                     }
                 });
 
-//        테스트용
-//        ArrayList<String> list = new ArrayList<>();
-//        for (int i=0; i<100; i++) {
-//            list.add(String.format("TEXT %d", i)) ;
-//        }
-//
-//        RecyclerView recyclerView = findViewById(R.id.addButtonView);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(activity_register.this));
-//        // LayoutManager 설정
-//
-//
-//        MyAdapter myAdapter = new MyAdapter(list);
-//        recyclerView.setAdapter(myAdapter); //어댑터 설정
-//        Log.d("phj", "어댑터 속 "+list.size());
-
-
-//        myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(View v, int position) {
-//            LayoutInflater inflater = (LayoutInflater) getSystemService(activity_register.LAYOUT_INFLATER_SERVICE);
-//            View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
-//
-//            AlertDialog regDialog = new AlertDialog.Builder(activity_register.this)
-//                    .setView(dialogView)
-//                    .setPositiveButton("확인", dialogListener)
-//                    .setNegativeButton("취소", null)
-//                    .create();
-//
-//            regDialog.show();
-//            }
-//        });
-
         binding.roomAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -157,5 +122,4 @@ public class activity_register extends AppCompatActivity {
 
     }
     //onCreate 끝남
-
 }
