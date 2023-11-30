@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/room">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="32dp"
-        android:layout_marginTop="32dp"
         android:text="비밀번호를 입력하세요"
-        android:textSize="15dp"
-        android:textStyle="bold"/>
+        android:textSize="30dp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"/>
 
     <EditText
         android:id="@+id/writePassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/text1"
-        android:layout_alignLeft="@id/text1"
         android:hint="PASSWORD"
-        android:background="#D9D9D9" />
+        android:textSize="20dp"
+        android:background="#D9D9D9"
+        android:maxLines="1"
+        android:layout_centerHorizontal="true"
+        android:inputType="number"/>
 
 </RelativeLayout>
