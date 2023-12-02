@@ -68,7 +68,7 @@
             android:id="@+id/register_password"
             android:layout_width="270dp"
             android:layout_height="match_parent"
-            android:inputType="textPassword"
+            android:inputType="number"
             tools:ignore="SpeakableTextPresentCheck" />
     </LinearLayout>
 
