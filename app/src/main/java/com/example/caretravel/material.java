@@ -126,13 +126,14 @@ public class material extends AppCompatActivity {
         listButton.setTextSize(30);
         listButton.setHeight(300);
         view.addView(listButton);
+
+        // 개인 리스트 화면으로 이동
         listButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(material.this, material_list.class);
                 intent.putExtra("name", name);
                 startActivity(intent);
-
             }
         });
     }
