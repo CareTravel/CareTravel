@@ -129,9 +129,6 @@ public class make_room extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String documentName = binding.registerName.getText().toString();
 
-        // 현재 시간을 가져와서 저장
-        long currentTimeMillis = System.currentTimeMillis();
-
         db.collection("rooms")
                 .whereEqualTo("name", documentName)
                 .get()
@@ -146,9 +143,6 @@ public class make_room extends AppCompatActivity {
                         data.put("endDate", updateSecondButtonDateTextView());
                         data.put("member", binding.registerMember.getText().toString());
                         data.put("memo", binding.registerMemo.getText().toString());
-
-                        // 현재 시간을 데이터에 추가
-                        data.put("timestamp", currentTimeMillis);
 
                         db.collection("rooms")
                                 .document(documentName)

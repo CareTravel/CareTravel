@@ -15,26 +15,38 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.caretravel.databinding.ActivityMakePlanBinding;
+import com.example.caretravel.databinding.DialogTimeInputBinding;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class make_Plan extends AppCompatActivity {
     private Button button1;
     private Button button2;
-
     private ActivityMakePlanBinding binding;
     private EditText inputStartTime;
     private EditText inputEndTime;
     private TableLayout tableLayout;
     private TableRow emptyRowTemplate;
-    private TableRow tableRow;
     private LinearLayout rootLayout;
+    private FirebaseFirestore db;
+    private String roomName;
+
+    private static final String COLLECTION_NAME = "collectionName"; // Firestore 컬렉션 이름
+    private static final String SUBCOLLECTION_NAME = "subcollectionName"; // Firestore 서브컬렉션 이름
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +54,11 @@ public class make_Plan extends AppCompatActivity {
         binding = ActivityMakePlanBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        FirebaseApp.initializeApp(this);
         rootLayout = findViewById(R.id.rootLayout);
+        db = FirebaseFirestore.getInstance();
+
+        binding.planSave.setOnClickListener(v -> savePlanToFirestore());
 
         // 뒤로가기 버튼
         binding.backButton.setOnClickListener(new View.OnClickListener() {
@@ -55,13 +71,13 @@ public class make_Plan extends AppCompatActivity {
         button1 = binding.planTime1;
         button2 = binding.planTime2;
         // day_plus 버튼 선언
-        Button day_plus = findViewById(R.id.day_plus);
+        Button day_plus = binding.dayPlus;
 
         Calendar.getInstance();
         new SimpleDateFormat("HH:mm", Locale.getDefault());
 
-        tableLayout = findViewById(R.id.tableLayout);
-        emptyRowTemplate = findViewById(R.id.empty_row_template);
+        tableLayout = binding.tableLayout;
+        emptyRowTemplate = binding.emptyRowTemplate;
 
         // 기존에 있던 첫 번째 빈 Row를 삭제
         tableLayout.removeView(emptyRowTemplate);
@@ -71,8 +87,98 @@ public class make_Plan extends AppCompatActivity {
         day_plus.setOnClickListener(v -> addNewTableLayout());  // 클릭 이벤트 리스너 설정
     }
 
-    private int dayCounter = 1;
+    public void setRoomName(String name) {
+        roomName = name;
+    }
+
+    // Firestore 저장 메서드
+    private void savePlanToFirestore() {
+        // Firestore 인스턴스 생성
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+
+        // 방 정보와 계획 정보 저장
+        String roomName = "방 이름"; // 사용자가 입력한 방 이름
+        String roomId = getRoomIdFromOtherJavaFile(); // 다른 자바 파일에서 방 정보의 다큐먼트 ID를 가져오는 메서드 호출
+        savePlanToFirestore(firestore, roomName, roomId);
+    }
+
+    // Firestore 저장 메서드
+    private void savePlanToFirestore(FirebaseFirestore firestore, String roomName, String roomId) {
+        // 방 정보가 저장된 다큐먼트 참조
+        DocumentReference roomDocRef = firestore.collection(COLLECTION_NAME).document(roomId);
+
+        // 기존 방의 다큐먼트 ID 값을 얻기 위해 쿼리를 실행합니다.
+        firestore.collection(COLLECTION_NAME)
+                .whereEqualTo("roomName", roomName)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        // 기존 방의 다큐먼트 ID 값을 얻어옵니다.
+                        String existingRoomId = documentSnapshot.getId();
+
+                        // 얻어온 다큐먼트 ID를 사용하여 참조를 생성합니다.
+                        DocumentReference roomRef = firestore.collection(COLLECTION_NAME).document(existingRoomId);
+
+                        // 각 TableLayout에 대한 반복
+                        for (int i = 0; i < rootLayout.getChildCount(); i++) {
+                            View view = rootLayout.getChildAt(i);
+                            if (view instanceof TableLayout) {
+                                TableLayout tableLayout = (TableLayout) view;
+
+                                // 각 TableRow에 대한 반복
+                                for (int j = 0; j < tableLayout.getChildCount(); j++) {
+                                    View rowView = tableLayout.getChildAt(j);
+                                    if (rowView instanceof TableRow) {
+                                        TableRow row = (TableRow) rowView;
+
+                                        // 버튼과 EditText 가져오기
+                                        view = row.getChildAt(0);
+                                        if (view instanceof Button) {
+                                            Button button = (Button) view;
+                                            EditText editText1 = (EditText) row.getChildAt(1);
+                                            EditText editText2 = (EditText) row.getChildAt(2);
+
+                                            // 데이터 만들기
+                                            Map<String, Object> plan = new HashMap<>();
+                                            plan.put("time", button.getText().toString()); // 버튼의 텍스트로 설정
+                                            plan.put("content1", editText1.getText().toString());
+                                            plan.put("content2", editText2.getText().toString());
+
+                                            // Firestore에 데이터 추가
+                                            roomRef.collection(SUBCOLLECTION_NAME)
+                                                    .add(plan)
+                                                    .addOnSuccessListener(documentReference -> {
+                                                        // 성공적으로 저장되었을 때 토스트 메시지 표시
+                                                        Toast.makeText(make_Plan.this, "저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        // 저장 실패 시 토스트 메시지 표시
+                                                        Toast.makeText(make_Plan.this, "저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                                    });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // 에러 처리를 수행합니다.
+                });
+    }
+
+
+
+    // 다른 자바 파일에서 방 정보의 다큐먼트 ID를 가져오는 메서드
+    private static String getRoomIdFromOtherJavaFile() {
+        // 해당 자바 파일에 구현된 로직을 호출하여 방 정보의 다큐먼트 ID를 가져온 후 반환
+        // 필요한 경우 해당 메서드를 수정하여 실제 로직을 구현해야 합니다.
+        return "방 정보의 다큐먼트 ID";
+    }
+
+
     // 새로운 TableLayout을 추가하는 메서드
+    private int dayCounter = 1;
     private void addNewTableLayout() {
         // table_layout.xml을 inflate하여 새로운 TableLayout 생성
         TableLayout newTableLayout = (TableLayout) getLayoutInflater().inflate(R.layout.table_layout, null);
@@ -88,7 +194,7 @@ public class make_Plan extends AppCompatActivity {
         layoutParams.setMargins(horizontalMargin, topMargin, horizontalMargin, 0);
         newTableLayout.setLayoutParams(layoutParams);
 
-        // plan_day1 아이디를 가진 텍스트 뷰의 텍스트를 설정
+        // plan_day1 텍스트 뷰의 텍스트를 설정
         TextView dayTextView = newTableLayout.findViewById(R.id.plan_day1);
         dayCounter++; // 일수를 1 증가
         dayTextView.setText(dayCounter + "일차");
@@ -110,17 +216,18 @@ public class make_Plan extends AppCompatActivity {
         rootLayout.addView(newTableLayout);
     }
 
+    // 다이얼로그 메서드
     private void showTimeInputDialog(final Button button) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("시간 입력");
 
-        // 다이얼로그에 입력 폼을 추가합니다.
-        View view = getLayoutInflater().inflate(R.layout.dialog_time_input, null);
-        builder.setView(view);
+        // 다이얼로그에 입력xml 바인딩
+        DialogTimeInputBinding binding = DialogTimeInputBinding.inflate(getLayoutInflater());
+        builder.setView(binding.getRoot());
 
-        inputStartTime = view.findViewById(R.id.input_start_time);
-        inputEndTime = view.findViewById(R.id.input_end_time);
-
+        inputStartTime = binding.inputStartTime;
+        inputEndTime = binding.inputEndTime;
+        // 다이얼로그의 확인 버튼 누를 시 클릭 리스너
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -191,8 +298,6 @@ public class make_Plan extends AppCompatActivity {
         // 마지막 로우가 없거나 예외 상황이라면 false 반환
         return false;
     }
-
-
 
     private void addNewRow(TableLayout tableLayout) {
         // 새로운 TableRow 생성
