@@ -96,7 +96,7 @@ public class material extends AppCompatActivity {
 
     // 이름 저장
     private void nameData(String name) {
-        String roomName = getIntent().getStringExtra("roomName");
+//        String roomName = getIntent().getStringExtra("roomName");
         Map<String, Object> listname = new HashMap<>();
         listname.put("name", name);
 
@@ -115,6 +115,7 @@ public class material extends AppCompatActivity {
                         Log.w("scr", "Error writing document", e);
                     }
                 });
+
 
     }
 

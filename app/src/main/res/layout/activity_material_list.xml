@@ -50,7 +50,7 @@
             android:layout_alignTop="@+id/mName"
             android:layout_alignParentRight="true"
             android:layout_marginTop="20dp"
-            android:layout_marginRight="40dp"
+            android:layout_marginRight="30dp"
             android:text="저장하기"
             android:textSize="20sp"/>
     </RelativeLayout>
@@ -61,7 +61,7 @@
         android:layout_gravity="center"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="5dp"
-        android:layout_marginRight="30dp"
+        android:layout_marginRight="20dp"
         android:layout_marginBottom="5dp"
         android:src="@drawable/line" />
 
@@ -82,93 +82,99 @@
                 android:layout_height="wrap_content">
                 <TableRow>
                     <CheckBox
-                        android:id="@+id/checkbox"
+                        android:id="@+id/checkbox_0"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_marginStart="15dp" />
                     <EditText
+                        android:id="@+id/material_0"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
                         android:layout_marginStart="5dp"
                         android:hint="세면도구"
-                        android:textSize="25sp"
+                        android:textSize="20sp"
                         android:background="@android:color/transparent"/>
                 </TableRow>
                 <TableRow>
                     <CheckBox
+                        android:id="@+id/checkbox_1"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_marginStart="15dp" />
                     <EditText
+                        android:id="@+id/material_1"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
                         android:layout_marginStart="5dp"
                         android:hint="여벌옷"
-                        android:textSize="25sp"
+                        android:textSize="20sp"
                         android:background="@android:color/transparent"/>
                 </TableRow>
                 <TableRow>
                     <CheckBox
+                        android:id="@+id/checkbox_2"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_marginStart="15dp" />
                     <EditText
+                        android:id="@+id/material_2"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
                         android:layout_marginStart="5dp"
                         android:hint="충전기"
-                        android:textSize="25sp"
+                        android:textSize="20sp"
                         android:background="@android:color/transparent"/>
                 </TableRow>
                 <TableRow>
                     <CheckBox
+                        android:id="@+id/checkbox_3"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_marginStart="15dp" />
                     <EditText
+                        android:id="@+id/material_3"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
                         android:layout_marginStart="5dp"
                         android:hint="보조배터리"
-                        android:textSize="25sp"
+                        android:textSize="20sp"
                         android:background="@android:color/transparent"/>
                 </TableRow>
-                <TableRow>
-                    <CheckBox
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_marginStart="15dp" />
-                    <EditText
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:layout_marginStart="5dp"
-                        android:hint="비상약"
-                        android:textSize="25sp"
-                        android:background="@android:color/transparent"/>
-                </TableRow>
+
                 <TableRow
                     android:id="@+id/plus_material">
                     <CheckBox
+                        android:id="@+id/checkbox_4"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_marginStart="15dp"/>
                     <EditText
-                        android:id="@+id/new_material"
+                        android:id="@+id/material_4"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
                         android:layout_marginStart="5dp"
-                        android:hint="+ 추가하기"
-                        android:textSize="25sp"
+                        android:hint="준비물을 입력하세요"
+                        android:textSize="20sp"
                         android:background="@android:color/transparent"/>
 
                 </TableRow>
-
             </TableLayout>
-
         </LinearLayout>
     </ScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right">
+        <Button
+            android:id="@+id/plus_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="준비물 추가하기"
+            android:textSize="15sp"
+            android:padding="15dp"
+            android:background="@drawable/room"
+            android:layout_marginBottom="20dp"
+            android:layout_marginRight="30dp"/>
+    </LinearLayout>
 
-
-
-    <!--스크롤 뷰 왜 안대..?-->
 </LinearLayout>
