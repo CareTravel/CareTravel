@@ -44,7 +44,7 @@ dependencies {
     implementation("com.android.volley:volley:1.2.1")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("androidx.gridlayout:gridlayout:1.0.0")
-    implementation("androidx.databinding:databinding-runtime:8.1.3")
+    implementation("androidx.databinding:databinding-runtime:8.1.4")
     implementation("com.google.firebase:firebase-firestore:24.9.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -52,8 +52,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
-    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
-    implementation("com.google.firebase:firebase-firestore")
     implementation ("com.firebaseui:firebase-ui-firestore:8.0.0")
     implementation ("androidx.paging:paging-runtime:3.2.1")
     // Add the dependency for the Realtime Database library
@@ -63,6 +61,4 @@ dependencies {
 
     // Declare the dependency for the Cloud Firestore library
     // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation("com.google.firebase:firebase-firestore")
-
 }

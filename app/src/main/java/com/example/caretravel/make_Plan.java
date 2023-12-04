@@ -21,10 +21,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.caretravel.databinding.ActivityMakePlanBinding;
 import com.example.caretravel.databinding.DialogTimeInputBinding;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -44,9 +48,6 @@ public class make_Plan extends AppCompatActivity {
     private FirebaseFirestore db;
     private String roomName;
 
-    private static final String COLLECTION_NAME = "collectionName"; // Firestore 컬렉션 이름
-    private static final String SUBCOLLECTION_NAME = "subcollectionName"; // Firestore 서브컬렉션 이름
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,6 @@ public class make_Plan extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         FirebaseApp.initializeApp(this);
-        rootLayout = findViewById(R.id.rootLayout);
         db = FirebaseFirestore.getInstance();
 
         binding.planSave.setOnClickListener(v -> savePlanToFirestore());
@@ -78,6 +78,8 @@ public class make_Plan extends AppCompatActivity {
 
         tableLayout = binding.tableLayout;
         emptyRowTemplate = binding.emptyRowTemplate;
+        rootLayout = binding.rootLayout;
+
 
         // 기존에 있던 첫 번째 빈 Row를 삭제
         tableLayout.removeView(emptyRowTemplate);
@@ -97,83 +99,79 @@ public class make_Plan extends AppCompatActivity {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
         // 방 정보와 계획 정보 저장
-        String roomName = "방 이름"; // 사용자가 입력한 방 이름
         String roomId = getRoomIdFromOtherJavaFile(); // 다른 자바 파일에서 방 정보의 다큐먼트 ID를 가져오는 메서드 호출
-        savePlanToFirestore(firestore, roomName, roomId);
+        savePlanToFirestore(firestore, roomId);
     }
 
     // Firestore 저장 메서드
-    private void savePlanToFirestore(FirebaseFirestore firestore, String roomName, String roomId) {
+    private void savePlanToFirestore(FirebaseFirestore firestore, String roomId) {
         // 방 정보가 저장된 다큐먼트 참조
-        DocumentReference roomDocRef = firestore.collection(COLLECTION_NAME).document(roomId);
+        DocumentReference roomDocRef = firestore.collection("rooms").document(roomId);
 
-        // 기존 방의 다큐먼트 ID 값을 얻기 위해 쿼리를 실행합니다.
-        firestore.collection(COLLECTION_NAME)
-                .whereEqualTo("roomName", roomName)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                        // 기존 방의 다큐먼트 ID 값을 얻어옵니다.
-                        String existingRoomId = documentSnapshot.getId();
+        // 각 TableLayout에 대한 반복
+        for (int i = 0; i < rootLayout.getChildCount(); i++) {
+            View view = rootLayout.getChildAt(i);
+            if (view instanceof TableLayout) {
+                TableLayout tableLayout = (TableLayout) view;
 
-                        // 얻어온 다큐먼트 ID를 사용하여 참조를 생성합니다.
-                        DocumentReference roomRef = firestore.collection(COLLECTION_NAME).document(existingRoomId);
+                // 각 TableRow에 대한 반복
+                for (int j = 0; j < tableLayout.getChildCount(); j++) {
+                    View rowView = tableLayout.getChildAt(j);
+                    if (rowView instanceof TableRow) {
+                        TableRow row = (TableRow) rowView;
 
-                        // 각 TableLayout에 대한 반복
-                        for (int i = 0; i < rootLayout.getChildCount(); i++) {
-                            View view = rootLayout.getChildAt(i);
-                            if (view instanceof TableLayout) {
-                                TableLayout tableLayout = (TableLayout) view;
+                        // 버튼과 EditText 가져오기
+                        view = row.getChildAt(0);
+                        if (view instanceof Button) {
+                            Button button = (Button) view;
+                            EditText editText1 = (EditText) row.getChildAt(1);
+                            EditText editText2 = (EditText) row.getChildAt(2);
 
-                                // 각 TableRow에 대한 반복
-                                for (int j = 0; j < tableLayout.getChildCount(); j++) {
-                                    View rowView = tableLayout.getChildAt(j);
-                                    if (rowView instanceof TableRow) {
-                                        TableRow row = (TableRow) rowView;
+                            // 데이터 만들기
+                            Map<String, Object> plan = new HashMap<>();
+                            plan.put("time", button.getText().toString()); // 버튼의 텍스트로 설정
+                            plan.put("content1", editText1.getText().toString());
+                            plan.put("content2", editText2.getText().toString());
 
-                                        // 버튼과 EditText 가져오기
-                                        view = row.getChildAt(0);
-                                        if (view instanceof Button) {
-                                            Button button = (Button) view;
-                                            EditText editText1 = (EditText) row.getChildAt(1);
-                                            EditText editText2 = (EditText) row.getChildAt(2);
-
-                                            // 데이터 만들기
-                                            Map<String, Object> plan = new HashMap<>();
-                                            plan.put("time", button.getText().toString()); // 버튼의 텍스트로 설정
-                                            plan.put("content1", editText1.getText().toString());
-                                            plan.put("content2", editText2.getText().toString());
-
-                                            // Firestore에 데이터 추가
-                                            roomRef.collection(SUBCOLLECTION_NAME)
-                                                    .add(plan)
-                                                    .addOnSuccessListener(documentReference -> {
-                                                        // 성공적으로 저장되었을 때 토스트 메시지 표시
-                                                        Toast.makeText(make_Plan.this, "저장되었습니다.", Toast.LENGTH_SHORT).show();
-                                                    })
-                                                    .addOnFailureListener(e -> {
-                                                        // 저장 실패 시 토스트 메시지 표시
-                                                        Toast.makeText(make_Plan.this, "저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
-                                                    });
-                                        }
-                                    }
-                                }
-                            }
+                            // Firestore에 데이터 추가
+                            roomDocRef.collection("plans")
+                                    .add(plan)
+                                    .addOnSuccessListener(documentReference -> {
+                                        // 성공적으로 저장되었을 때 토스트 메시지 표시
+                                        Toast.makeText(make_Plan.this, "저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        // 저장 실패 시 토스트 메시지 표시
+                                        Toast.makeText(make_Plan.this, "저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                    });
                         }
                     }
-                })
-                .addOnFailureListener(e -> {
-                    // 에러 처리를 수행합니다.
-                });
+                }
+            }
+        }
     }
 
-
-
-    // 다른 자바 파일에서 방 정보의 다큐먼트 ID를 가져오는 메서드
     private static String getRoomIdFromOtherJavaFile() {
-        // 해당 자바 파일에 구현된 로직을 호출하여 방 정보의 다큐먼트 ID를 가져온 후 반환
-        // 필요한 경우 해당 메서드를 수정하여 실제 로직을 구현해야 합니다.
-        return "방 정보의 다큐먼트 ID";
+        // Firebase Firestore에 접근하여 방 정보의 다큐먼트 ID를 조회하는 로직 구현
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        CollectionReference roomsCollection = firestore.collection("rooms");
+
+        // Firestore 작업 수행
+        Task<QuerySnapshot> querySnapshotTask = roomsCollection.get();
+        try {
+            // Firestore 작업 완료 대기
+            QuerySnapshot querySnapshot = Tasks.await(querySnapshotTask);
+            // 방 ID 가져오기
+            if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                DocumentSnapshot documentSnapshot = querySnapshot.getDocuments().get(0);
+                String roomId = documentSnapshot.getId();
+                return roomId;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 
