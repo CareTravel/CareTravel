@@ -46,6 +46,9 @@ public class activity_register extends AppCompatActivity {
     private ActivityRegisterBinding binding;
     private FirebaseFirestore db;
     private EditText editText;
+    private String roomName;
+    private String userPsd;
+    private String serverPsd;
 
     private void showToast(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
@@ -53,33 +56,41 @@ public class activity_register extends AppCompatActivity {
     }
 
     //수정--------------------------------
-    public void queryRoomsCollection(String roomName, int userPsd) {
+    public void queryRoomsCollection(String userPsd) {//userPsd
         Log.d("phj","커리 들어옴"+userPsd);
         //방 이름 같은 문서 가져오기
         db.collection("rooms")
-                //비밀번호 같은 문서 찾기
-                .whereEqualTo("name",roomName)
+//                //비밀번호 같은 문서 찾기
+                //.whereEqualTo("name",roomName)//방이름으로 커리할지, 유저패스워드로 커리할지?
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     Log.d("phj","방 있는 것 확인");
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        Log.d("phj","포문 들어옴");
-                        // 각 문서의 "password" 필드 값 가져오기
-                        int serverPsd = Math.toIntExact(document.getLong("password"));
-                        //방 이름 가져오기
-                        //String roomName = document.getId();
-                        Log.d("phj", "Password: " + serverPsd);
+                        Log.d("phj", "포문 들어옴");
+                        // 각 문서의 password,roomName 값 가져오기
+                        serverPsd = (String) document.get("password");
+                        roomName = document.getId();
 
-//                      //비교해서 홈화면으로 화면 넘기기, 방 이름 같이 넘김 -> 기능으로 들어갈때 방 이름 맞춰서 서버 연결
-                        if (serverPsd == userPsd) {
-                        showToast( "방으로 들어왔습니다.");
-                        Intent intent = new Intent(activity_register.this, home.class);
-                        intent.putExtra("name",roomName);
-                        setResult(RESULT_OK,intent);
-                        finish();
-                        }
-                        else showToast("비밀번호가 틀렸습니다. 비밀번호를 확인하거나, 방 이름이 맞는지 다시 확인해 주세요.");
+                        Log.d("phj", roomName);
+                        Log.d("phj", "sever Password: " + serverPsd);
+                        Log.d("phj", "user Password: " + userPsd);
                     }
+
+////                      //비교해서 홈화면으로 화면 넘기기, 방 이름 같이 넘김 -> 기능으로 들어갈때 방 이름 맞춰서 서버 연결
+                        if (serverPsd.equals(userPsd)) {
+                            Log.d("phj", "비교문 같음");
+                            showToast( "방으로 들어왔습니다.");
+                        //
+//                        Intent intent = new Intent(activity_register.this, home.class);
+//                        intent.putExtra("password",userPsd);
+//                        intent.putExtra("roomName",roomName);
+//                        setResult(RESULT_OK,intent);
+//                        finish();
+                        } else{
+                            Log.d("phj", "비교문 다름");
+                            showToast("비밀번호가 틀렸습니다. 비밀번호를 확인하거나, 방 이름이 맞는지 다시 확인해 주세요.");
+                            startActivity(new Intent(activity_register.this, home.class));}
+                    //}
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Error getting documents: ", e);
@@ -96,31 +107,31 @@ public class activity_register extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         //수정------------------------
-        MyAdapter adapter = new MyAdapter(list);
-        adapter.setOnItemClickListener((position, text) -> {
-            // 클릭된 아이템의 포지션과 텍스트 값에 대한 작업 수행
-            Log.d("phj", "Clicked item at position: " + position + ", Text: " + text);
-
-            LayoutInflater inflater = (LayoutInflater) getSystemService(activity_register.LAYOUT_INFLATER_SERVICE);
-            View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
-            editText = dialogView.findViewById(R.id.writePassword);
-            AlertDialog regDialog = new AlertDialog.Builder(activity_register.this)
-                    .setView(dialogView)
-                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            String userPsd = editText.getText().toString();
-                            String roomName = String.valueOf(text);
-                            Log.d("phj", "userPsd: " + userPsd);
-                            queryRoomsCollection(roomName, Integer.parseInt(userPsd));
-
-                        }
-                    })
-                    .setNegativeButton("취소", null)
-                    .create();
-
-            regDialog.show();
-        });
+//        MyAdapter adapter = new MyAdapter(list);
+//        adapter.setOnItemClickListener((position, text) -> {
+//            // 클릭된 아이템의 포지션과 텍스트 값에 대한 작업 수행
+//            Log.d("phj", "Clicked item at position: " + position + ", Text: " + text);
+//
+//            LayoutInflater inflater = (LayoutInflater) getSystemService(activity_register.LAYOUT_INFLATER_SERVICE);
+//            View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
+//            editText = dialogView.findViewById(R.id.writePassword);
+//            AlertDialog regDialog = new AlertDialog.Builder(activity_register.this)
+//                    .setView(dialogView)
+//                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            String userPsd = editText.getText().toString();
+//                            String roomName = String.valueOf(text);
+//                            Log.d("phj", "userPsd: " + userPsd);
+//                            queryRoomsCollection(roomName, Integer.parseInt(userPsd));
+//
+//                        }
+//                    })
+//                    .setNegativeButton("취소", null)
+//                    .create();
+//
+//            regDialog.show();
+//        });
         //수정-----------------
 
         initializeCloudFirestore();
@@ -132,7 +143,7 @@ public class activity_register extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (DocumentSnapshot document : task.getResult()) {
-                                String roomName = document.getId();
+                                roomName = document.getId();
                                 list.add(roomName);
 
                                 RecyclerView recyclerView = findViewById(R.id.addButtonView);
@@ -141,29 +152,29 @@ public class activity_register extends AppCompatActivity {
                                 MyAdapter myAdapter = new MyAdapter(list);
                                 recyclerView.setAdapter(myAdapter);
 
-//                                myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
-//                                    @Override
-//                                    public void onItemClick(View v, int position) {
-//                                        LayoutInflater inflater = (LayoutInflater) getSystemService(activity_register.LAYOUT_INFLATER_SERVICE);
-//                                        View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
-//                                        editText = dialogView.findViewById(R.id.writePassword);
-//
-//                                        AlertDialog regDialog = new AlertDialog.Builder(activity_register.this)
-//                                                .setView(dialogView)
-//                                                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-//                                                    @Override
-//                                                    public void onClick(DialogInterface dialog, int which) {
-//                                                        String userPsd = editText.getText().toString();
-//                                                        Log.d("phj", "userPsd: " + userPsd);
-//                                                        queryRoomsCollection(Integer.parseInt(userPsd));
-//                                                    }
-//                                                })
-//                                                .setNegativeButton("취소", null)
-//                                                .create();
-//
-//                                        regDialog.show();
-//                                    }
-//                                });
+                                myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(View v, int position) {
+                                        LayoutInflater inflater = (LayoutInflater) getSystemService(activity_register.LAYOUT_INFLATER_SERVICE);
+                                        View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
+                                        editText = dialogView.findViewById(R.id.writePassword);
+
+                                        AlertDialog regDialog = new AlertDialog.Builder(activity_register.this)
+                                                .setView(dialogView)
+                                                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        userPsd = editText.getText().toString();
+                                                        Log.d("phj", "userPsd: " + userPsd);
+                                                        queryRoomsCollection(userPsd);
+                                                    }
+                                                })
+                                                .setNegativeButton("취소", null)
+                                                .create();
+
+                                        regDialog.show();
+                                    }
+                                });
 
                             }
                         } else {
@@ -184,7 +195,7 @@ public class activity_register extends AppCompatActivity {
                         if (result.getResultCode() == RESULT_OK) {
                             Intent data = result.getData();
                             if (data != null) {
-                                String roomName = data.getStringExtra("name");
+                                roomName = data.getStringExtra("name");
                                 //Log.d("phj", "result 돌아옴" + roomName);
                                 list.add(roomName);
                             }
@@ -199,28 +210,28 @@ public class activity_register extends AppCompatActivity {
 
                             myAdapter.notifyDataSetChanged();
 
-//                            myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
-//                                @Override
-//                                public void onItemClick(View v, int position) {
-//                                    LayoutInflater inflater = (LayoutInflater) getSystemService(activity_register.LAYOUT_INFLATER_SERVICE);
-//                                    View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
-//
-//                                    AlertDialog regDialog = new AlertDialog.Builder(activity_register.this)
-//                                            .setView(dialogView)
-//                                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-//                                                @Override
-//                                                public void onClick(DialogInterface dialog, int which) {
-//                                                    String userPsd = editText.getText().toString();
-//                                                    Log.d("phj", "userPsd: " + userPsd);
-//                                                    queryRoomsCollection(Integer.parseInt(userPsd));
-//                                                }
-//                                            })
-//                                            .setNegativeButton("취소", null)
-//                                            .create();
-//
-//                                    regDialog.show();
-//                                }
-//                            });
+                            myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(View v, int position) {
+                                    LayoutInflater inflater = (LayoutInflater) getSystemService(activity_register.LAYOUT_INFLATER_SERVICE);
+                                    View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
+
+                                    AlertDialog regDialog = new AlertDialog.Builder(activity_register.this)
+                                            .setView(dialogView)
+                                            .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    userPsd = editText.getText().toString();
+                                                    Log.d("phj", "userPsd: " + userPsd);
+                                                    queryRoomsCollection(userPsd);
+                                                }
+                                            })
+                                            .setNegativeButton("취소", null)
+                                            .create();
+
+                                    regDialog.show();
+                                }
+                            });
                             //어댑터
 
                         }
