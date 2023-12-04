@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
@@ -21,8 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.caretravel.databinding.ActivityMakePlanBinding;
 import com.example.caretravel.databinding.DialogTimeInputBinding;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -54,6 +53,16 @@ public class make_Plan extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMakePlanBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // SharedPreferences에서 선택된 방의 이름을 가져옵니다.
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
+        roomName = sharedPreferences.getString("selectedRoomName", null);
+        if (roomName == null) {
+            // 선택된 방의 이름이 없는 경우, 사용자에게 메시지를 표시하고 다른 화면으로 이동합니다.
+            Toast.makeText(this, "선택된 방이 없습니다. 다시 선택해주세요.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
@@ -89,22 +98,24 @@ public class make_Plan extends AppCompatActivity {
         day_plus.setOnClickListener(v -> addNewTableLayout());  // 클릭 이벤트 리스너 설정
     }
 
-    public void setRoomName(String name) {
-        roomName = name;
-    }
-
     // Firestore 저장 메서드
     private void savePlanToFirestore() {
-        // Firestore 인스턴스 생성
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
-        // 방 정보와 계획 정보 저장
-        String roomId = getRoomIdFromOtherJavaFile(); // 다른 자바 파일에서 방 정보의 다큐먼트 ID를 가져오는 메서드 호출
-        savePlanToFirestore(firestore, roomId);
+        getRoomIdFromOtherJavaFile(roomName, roomId -> {
+            // roomId를 받아왔을 때 실행되는 코드
+            savePlanToFirestore(firestore, roomId);
+        });
     }
 
     // Firestore 저장 메서드
     private void savePlanToFirestore(FirebaseFirestore firestore, String roomId) {
+        // roomId 값이 null인 경우 처리
+        if (roomId == null) {
+            Toast.makeText(make_Plan.this, "방 정보를 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // 방 정보가 저장된 다큐먼트 참조
         DocumentReference roomDocRef = firestore.collection("rooms").document(roomId);
 
@@ -127,23 +138,32 @@ public class make_Plan extends AppCompatActivity {
                             EditText editText1 = (EditText) row.getChildAt(1);
                             EditText editText2 = (EditText) row.getChildAt(2);
 
-                            // 데이터 만들기
-                            Map<String, Object> plan = new HashMap<>();
-                            plan.put("time", button.getText().toString()); // 버튼의 텍스트로 설정
-                            plan.put("content1", editText1.getText().toString());
-                            plan.put("content2", editText2.getText().toString());
+                        // 텍스트 가져오기
+                            String time = button.getText().toString();
+                            String content1 = editText1.getText().toString().trim();
+                            String content2 = editText2.getText().toString().trim();
 
-                            // Firestore에 데이터 추가
-                            roomDocRef.collection("plans")
-                                    .add(plan)
-                                    .addOnSuccessListener(documentReference -> {
-                                        // 성공적으로 저장되었을 때 토스트 메시지 표시
-                                        Toast.makeText(make_Plan.this, "저장되었습니다.", Toast.LENGTH_SHORT).show();
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        // 저장 실패 시 토스트 메시지 표시
-                                        Toast.makeText(make_Plan.this, "저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
-                                    });
+                        // 빈 값 체크
+                            if (!time.equals("시간 선택") && !content1.isEmpty() && !content2.isEmpty()) {
+                                // 데이터 만들기
+                                Map<String, Object> plan = new HashMap<>();
+                                plan.put("time", time);
+                                plan.put("content1", content1);
+                                plan.put("content2", content2);
+
+                                // Firestore에 데이터 추가
+                                roomDocRef.collection("plans")
+                                        .document("table" + i + "row" + j)  // 각 행을 별도의 문서로 저장
+                                        .set(plan)
+                                        .addOnSuccessListener(documentReference -> {
+                                            // 성공적으로 저장되었을 때 토스트 메시지 표시
+                                            Toast.makeText(make_Plan.this, "저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            // 저장 실패 시 토스트 메시지 표시
+                                            Toast.makeText(make_Plan.this, "저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                                        });
+                            }
                         }
                     }
                 }
@@ -151,27 +171,29 @@ public class make_Plan extends AppCompatActivity {
         }
     }
 
-    private static String getRoomIdFromOtherJavaFile() {
+    private void getRoomIdFromOtherJavaFile(String roomName, OnRoomIdReceivedListener listener) {
         // Firebase Firestore에 접근하여 방 정보의 다큐먼트 ID를 조회하는 로직 구현
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         CollectionReference roomsCollection = firestore.collection("rooms");
 
-        // Firestore 작업 수행
-        Task<QuerySnapshot> querySnapshotTask = roomsCollection.get();
-        try {
-            // Firestore 작업 완료 대기
-            QuerySnapshot querySnapshot = Tasks.await(querySnapshotTask);
-            // 방 ID 가져오기
-            if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                DocumentSnapshot documentSnapshot = querySnapshot.getDocuments().get(0);
-                String roomId = documentSnapshot.getId();
-                return roomId;
+        roomsCollection.whereEqualTo("name", roomName).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                QuerySnapshot querySnapshot = task.getResult();
+                if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                    DocumentSnapshot documentSnapshot = querySnapshot.getDocuments().get(0);
+                    String roomId = documentSnapshot.getId();
+                    listener.onRoomIdReceived(roomId);  // roomId를 Listener를 통해 반환
+                } else {
+                    Toast.makeText(make_Plan.this, "방 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(make_Plan.this, "방 정보를 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
+    }
 
-        return null;
+    interface OnRoomIdReceivedListener {
+        void onRoomIdReceived(String roomId);
     }
 
 
