@@ -24,7 +24,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View v, int position) ;
+        void onItemClick(View v, int position);
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
@@ -68,10 +68,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull MyAdapter.MyViewHolder holder, int position) {
-        String text = list.get(position);
+        String roomnameText = list.get(position);
         //Log.d("phj", "뷰 홀더 들어와서 포지션 + "+position);
         //String roomName = getIntent().getStringExtra("documentName");
-        holder.textView.setText(text);
+        holder.textView.setText(roomnameText);
     }
 
     @Override

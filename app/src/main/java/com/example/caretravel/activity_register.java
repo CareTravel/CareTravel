@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,93 +47,60 @@ public class activity_register extends AppCompatActivity {
     private ActivityRegisterBinding binding;
     private FirebaseFirestore db;
     private EditText editText;
-    private String roomName;
     private String userPsd;
-    private String serverPsd;
+    ArrayList<String> list = new ArrayList<>();
 
     private void showToast(String message) {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();
     }
 
-    //수정--------------------------------
-    public void queryRoomsCollection(String userPsd) {//userPsd
-        Log.d("phj","커리 들어옴"+userPsd);
+    public void queryRoomsCollection(String userPsd, int num) {//userPsd
+        //position으로 받아서 같은 포지션의 방 이름 구하기
+        Log.d("phj", "커리 들어옴" + userPsd);
+        String roomnameText = list.get(num);
+        Log.d("phj", "클릭한 방 이름" + roomnameText);
+
+        initializeCloudFirestore();
         //방 이름 같은 문서 가져오기
         db.collection("rooms")
 //                //비밀번호 같은 문서 찾기
-                //.whereEqualTo("name",roomName)//방이름으로 커리할지, 유저패스워드로 커리할지?
+                .document(roomnameText)
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    Log.d("phj","방 있는 것 확인");
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                .addOnSuccessListener(documentSnapshots -> {
+                    Log.d("phj", "방 있는 것 확인");
+                    if (documentSnapshots.exists()) {
                         Log.d("phj", "포문 들어옴");
                         // 각 문서의 password,roomName 값 가져오기
-                        serverPsd = (String) document.get("password");
-                        roomName = document.getId();
+                        String serverPsd = documentSnapshots.getString("password");
+                        String roomName = documentSnapshots.getId();
 
                         Log.d("phj", roomName);
                         Log.d("phj", "sever Password: " + serverPsd);
                         Log.d("phj", "user Password: " + userPsd);
-                    }
+                        Log.d("phj","커리안에서 포지션"+ num);
 
 ////                      //비교해서 홈화면으로 화면 넘기기, 방 이름 같이 넘김 -> 기능으로 들어갈때 방 이름 맞춰서 서버 연결
-                        if (serverPsd.equals(userPsd)) {
-                            Log.d("phj", "비교문 같음");
-                            showToast( "방으로 들어왔습니다.");
-                        //
-//                        Intent intent = new Intent(activity_register.this, home.class);
-//                        intent.putExtra("password",userPsd);
-//                        intent.putExtra("roomName",roomName);
-//                        setResult(RESULT_OK,intent);
-//                        finish();
-                        } else{
-                            Log.d("phj", "비교문 다름");
-                            showToast("비밀번호가 틀렸습니다. 비밀번호를 확인하거나, 방 이름이 맞는지 다시 확인해 주세요.");
-                            startActivity(new Intent(activity_register.this, home.class));}
-                    //}
+                    if (serverPsd.equals(userPsd)) {
+                        Log.d("phj", "비교문 같음");
+                        showToast("방으로 들어왔습니다.");
+                        startActivity(new Intent(activity_register.this, home.class));
+                    } else {
+                        Log.d("phj", "비교문 다름");
+                        showToast("비밀번호가 틀렸습니다. 비밀번호를 확인하거나, 방 이름이 맞는지 다시 확인해 주세요.");
+                    }
+                    }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Error getting documents: ", e);
                 });
     }
-    //수정--------------------------------
-
-    ArrayList<String> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        //수정------------------------
-//        MyAdapter adapter = new MyAdapter(list);
-//        adapter.setOnItemClickListener((position, text) -> {
-//            // 클릭된 아이템의 포지션과 텍스트 값에 대한 작업 수행
-//            Log.d("phj", "Clicked item at position: " + position + ", Text: " + text);
-//
-//            LayoutInflater inflater = (LayoutInflater) getSystemService(activity_register.LAYOUT_INFLATER_SERVICE);
-//            View dialogView = inflater.inflate(R.layout.regdialog_layout, null);
-//            editText = dialogView.findViewById(R.id.writePassword);
-//            AlertDialog regDialog = new AlertDialog.Builder(activity_register.this)
-//                    .setView(dialogView)
-//                    .setPositiveButton("확인", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            String userPsd = editText.getText().toString();
-//                            String roomName = String.valueOf(text);
-//                            Log.d("phj", "userPsd: " + userPsd);
-//                            queryRoomsCollection(roomName, Integer.parseInt(userPsd));
-//
-//                        }
-//                    })
-//                    .setNegativeButton("취소", null)
-//                    .create();
-//
-//            regDialog.show();
-//        });
-        //수정-----------------
 
         initializeCloudFirestore();
         //원래 있던 방 리스트 불러오기
@@ -143,7 +111,7 @@ public class activity_register extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (DocumentSnapshot document : task.getResult()) {
-                                roomName = document.getId();
+                                String roomName = document.getId();
                                 list.add(roomName);
 
                                 RecyclerView recyclerView = findViewById(R.id.addButtonView);
@@ -151,7 +119,6 @@ public class activity_register extends AppCompatActivity {
 
                                 MyAdapter myAdapter = new MyAdapter(list);
                                 recyclerView.setAdapter(myAdapter);
-
                                 myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
                                     @Override
                                     public void onItemClick(View v, int position) {
@@ -166,7 +133,7 @@ public class activity_register extends AppCompatActivity {
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         userPsd = editText.getText().toString();
                                                         Log.d("phj", "userPsd: " + userPsd);
-                                                        queryRoomsCollection(userPsd);
+                                                        queryRoomsCollection(userPsd, position);
                                                     }
                                                 })
                                                 .setNegativeButton("취소", null)
@@ -183,8 +150,6 @@ public class activity_register extends AppCompatActivity {
                     }
                 });
 
-
-
         //방만들기 리스너 받고 와서 방 추가
         ActivityResultLauncher<Intent> startActivityResult = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -195,7 +160,7 @@ public class activity_register extends AppCompatActivity {
                         if (result.getResultCode() == RESULT_OK) {
                             Intent data = result.getData();
                             if (data != null) {
-                                roomName = data.getStringExtra("name");
+                                String roomName = data.getStringExtra("name");
                                 //Log.d("phj", "result 돌아옴" + roomName);
                                 list.add(roomName);
                             }
@@ -223,7 +188,7 @@ public class activity_register extends AppCompatActivity {
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     userPsd = editText.getText().toString();
                                                     Log.d("phj", "userPsd: " + userPsd);
-                                                    queryRoomsCollection(userPsd);
+                                                    queryRoomsCollection(userPsd,position);
                                                 }
                                             })
                                             .setNegativeButton("취소", null)
@@ -237,8 +202,6 @@ public class activity_register extends AppCompatActivity {
                         }
                     }
                 });
-
-
 
         binding.roomAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -254,7 +217,6 @@ public class activity_register extends AppCompatActivity {
                 startActivity(new Intent(activity_register.this, myPage.class));
             }
         });
-
     }
     //onCreate 끝남
     private void initializeCloudFirestore() {
