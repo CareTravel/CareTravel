@@ -62,17 +62,15 @@ public class myPage extends AppCompatActivity {
         binding.backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(myPage.this, activity_register.class));
+                finish();
+//                startActivity(new Intent(myPage.this, activity_register.class));
             }
         });
     }
     private void initFirebaseAuth() {
         mAuth = FirebaseAuth.getInstance();
     }
-//    public void onStart(){
-//        super.onStart();
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//    }
+
 
     // 로그아웃 함수
     private void signOut() {
