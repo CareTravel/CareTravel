@@ -2,12 +2,12 @@ package com.example.caretravel;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
@@ -22,11 +22,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.caretravel.databinding.ActivityMakePlanBinding;
 import com.example.caretravel.databinding.DialogTimeInputBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
@@ -34,6 +38,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import io.reactivex.rxjava3.annotations.NonNull;
 
 public class make_Plan extends AppCompatActivity {
     private Button button1;
@@ -44,7 +50,6 @@ public class make_Plan extends AppCompatActivity {
     private TableLayout tableLayout;
     private TableRow emptyRowTemplate;
     private LinearLayout rootLayout;
-    private FirebaseFirestore db;
     private String roomName;
 
 
@@ -57,25 +62,13 @@ public class make_Plan extends AppCompatActivity {
         // SharedPreferences에서 선택된 방의 이름을 가져옵니다.
         SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
         roomName = sharedPreferences.getString("selectedRoomName", null);
-        if (roomName == null) {
-            // 선택된 방의 이름이 없는 경우, 사용자에게 메시지를 표시하고 다른 화면으로 이동합니다.
-            Toast.makeText(this, "선택된 방이 없습니다. 다시 선택해주세요.", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
 
         FirebaseApp.initializeApp(this);
-        db = FirebaseFirestore.getInstance();
 
         binding.planSave.setOnClickListener(v -> savePlanToFirestore());
 
         // 뒤로가기 버튼
-        binding.backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(make_Plan.this, home.class));
-            }
-        });
+        binding.backButton.setOnClickListener(v -> startActivity(new Intent(make_Plan.this, home.class)));
 
         button1 = binding.planTime1;
         button2 = binding.planTime2;
@@ -96,12 +89,75 @@ public class make_Plan extends AppCompatActivity {
         button1.setOnClickListener(v -> showTimeInputDialog(button1));
         button2.setOnClickListener(v -> showTimeInputDialog(button2));
         day_plus.setOnClickListener(v -> addNewTableLayout());  // 클릭 이벤트 리스너 설정
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        loadData(firestore, roomName);
     }
+
+    // 데이터 가져오는 메소드
+    private void loadData(FirebaseFirestore firestore, String roomId) {
+        firestore.collection("rooms")
+                .document(roomId)
+                .collection("plans")
+                .orderBy(FieldPath.documentId()) // 문서 ID로 정렬
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            String currentTableId = "";
+                            TableLayout currentTableLayout = null;
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String documentId = document.getId();
+                                String[] split = documentId.split("table|row");
+                                String tableId = split[1];
+                                if (!tableId.equals(currentTableId)) {
+
+                                    // 새로운 테이블인 경우 기존 테이블 레이아웃 가져오기
+                                    if (rootLayout.getChildCount() > Integer.parseInt(tableId)) {
+                                        currentTableLayout = (TableLayout) rootLayout.getChildAt(Integer.parseInt(tableId));
+                                    } else {
+                                        // TableLayout이 존재하지 않는 경우 새로 생성
+                                        addNewTableLayout();
+                                        currentTableLayout = (TableLayout) rootLayout.getChildAt(rootLayout.getChildCount() - 1);
+                                    }
+                                    currentTableId = tableId;
+                                }
+
+                                // 기존 로우 가져오고 데이터 설정
+                                int rowIndex = Integer.parseInt(split[2]);
+                                TableRow row = null;
+                                if (currentTableLayout != null && currentTableLayout.getChildCount() > rowIndex) {
+                                    row = (TableRow) currentTableLayout.getChildAt(rowIndex);
+                                } else {
+                                    // TableRow가 존재하지 않는 경우 새로 생성
+                                    addNewRow(currentTableLayout);
+                                    row = (TableRow) currentTableLayout.getChildAt(currentTableLayout.getChildCount() - 1);
+                                }
+
+                                Button button = (Button) row.getChildAt(0);
+                                EditText editText1 = (EditText) row.getChildAt(1);
+                                EditText editText2 = (EditText) row.getChildAt(2);
+                                Map<String, Object> plan = (Map<String, Object>) document.getData();
+                                String time = (String) plan.get("time");
+                                String content1 = (String) plan.get("content1");
+                                String content2 = (String) plan.get("content2");
+                                button.setText(time);
+                                editText1.setText(content1);
+                                editText2.setText(content2);
+                            }
+                            Log.d("lay", "계획정보를 모두 불러왔습니다.");
+                        } else {
+                            Log.d("lay", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
+
 
     // Firestore 저장 메서드
     private void savePlanToFirestore() {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-
         getRoomIdFromOtherJavaFile(roomName, roomId -> {
             // roomId를 받아왔을 때 실행되는 코드
             savePlanToFirestore(firestore, roomId);
@@ -144,7 +200,7 @@ public class make_Plan extends AppCompatActivity {
                             String content2 = editText2.getText().toString().trim();
 
                         // 빈 값 체크
-                            if (!time.equals("시간 선택") && !content1.isEmpty() && !content2.isEmpty()) {
+                          //  if (!time.equals("시간 선택") && !content1.isEmpty() && !content2.isEmpty()) {
                                 // 데이터 만들기
                                 Map<String, Object> plan = new HashMap<>();
                                 plan.put("time", time);
@@ -163,7 +219,7 @@ public class make_Plan extends AppCompatActivity {
                                             // 저장 실패 시 토스트 메시지 표시
                                             Toast.makeText(make_Plan.this, "저장에 실패했습니다.", Toast.LENGTH_SHORT).show();
                                         });
-                            }
+                            //}
                         }
                     }
                 }
@@ -248,31 +304,28 @@ public class make_Plan extends AppCompatActivity {
         inputStartTime = binding.inputStartTime;
         inputEndTime = binding.inputEndTime;
         // 다이얼로그의 확인 버튼 누를 시 클릭 리스너
-        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String startTime = inputStartTime.getText().toString();
-                String endTime = inputEndTime.getText().toString();
-                String buttonText = startTime + " - " + endTime;
-                button.setText(buttonText);
+        builder.setPositiveButton("확인", (dialog, which) -> {
+            String startTime = inputStartTime.getText().toString();
+            String endTime = inputEndTime.getText().toString();
+            String buttonText = startTime + " - " + endTime;
+            button.setText(buttonText);
 
-                // 현재 클릭한 버튼이 속한 TableRow를 찾음
-                TableRow currentRow = (TableRow) button.getParent();
-                // 그 TableRow가 속한 TableLayout를 찾음
-                TableLayout currentTableLayout = null;
-                View parentView = (View) currentRow.getParent();
-                while (parentView != null) {
-                    if (parentView instanceof TableLayout) {
-                        currentTableLayout = (TableLayout) parentView;
-                        break;
-                    }
-                    parentView = (View) parentView.getParent();
+            // 현재 클릭한 버튼이 속한 TableRow를 찾음
+            TableRow currentRow = (TableRow) button.getParent();
+            // 그 TableRow가 속한 TableLayout를 찾음
+            TableLayout currentTableLayout = null;
+            View parentView = (View) currentRow.getParent();
+            while (parentView != null) {
+                if (parentView instanceof TableLayout) {
+                    currentTableLayout = (TableLayout) parentView;
+                    break;
                 }
+                parentView = (View) parentView.getParent();
+            }
 
-                if (currentTableLayout != null && isLastRowFilled(currentTableLayout)) {
-                    // 새로운 로우를 만들어 TableLayout에 추가
-                    addNewRow(currentTableLayout);
-                }
+            if (currentTableLayout != null && isLastRowFilled(currentTableLayout)) {
+                // 새로운 로우를 만들어 TableLayout에 추가
+                addNewRow(currentTableLayout);
             }
         });
 
