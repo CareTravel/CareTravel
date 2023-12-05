@@ -1,6 +1,7 @@
 package com.example.caretravel;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -8,7 +9,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.caretravel.databinding.ActivityTravelInfoBinding;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
@@ -18,12 +18,18 @@ public class activity_travel_info extends AppCompatActivity {
     private TextView memberTextView, locationTextView, dateTextView;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private ListenerRegistration listenerRegistration;
+    private String roomName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityTravelInfoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // SharedPreferences에서 선택된 방의 이름을 가져옵니다.
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
+        roomName = sharedPreferences.getString("selectedRoomName", null);
 
         // 뒤로가기 버튼
         binding.backButton.setOnClickListener(new View.OnClickListener() {
@@ -37,29 +43,32 @@ public class activity_travel_info extends AppCompatActivity {
         locationTextView = binding.location;
         dateTextView = binding.Date;
 
+        // 데이터를 가져오는 메서드 호출
+        loadRoomData();
+    }
+
+    private void loadRoomData() {
         // 파이어스토어에서 데이터 가져오기
         listenerRegistration = db.collection("rooms")
-                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                .document(roomName)
+                .addSnapshotListener((documentSnapshot, e) -> {
                     if (e != null) {
                         // 에러 처리
                         return;
                     }
 
-                    if (queryDocumentSnapshots != null) {
-                        for (DocumentSnapshot document : queryDocumentSnapshots) {
+                    if (documentSnapshot != null && documentSnapshot.exists()) {
+                        String memberValue = documentSnapshot.getString("member");
+                        String locationValue = documentSnapshot.getString("location");
+                        String startDateValue = documentSnapshot.getString("startDate");
+                        String endDateValue = documentSnapshot.getString("endDate");
 
-                            String memberValue = document.getString("member");
-                            String locationValue = document.getString("location");
-                            String startDateValue = document.getString("startDate");
-                            String endDateValue = document.getString("endDate");
+                        // startDate와 endDate를 합쳐서 dateTextView에 표시
+                        String combinedDate = "Start: " + startDateValue + "\n End: " + endDateValue;
 
-                            // startDate와 endDate를 합쳐서 dateTextView에 표시
-                            String combinedDate = "Start: " + startDateValue + "\nEnd: " + endDateValue;
-
-
-                            memberTextView.setText(memberValue);
-                            locationTextView.setText(locationValue);
-                            dateTextView.setText(combinedDate);                        }
+                        memberTextView.setText(memberValue);
+                        locationTextView.setText(locationValue);
+                        dateTextView.setText(combinedDate);
                     }
                 });
     }
