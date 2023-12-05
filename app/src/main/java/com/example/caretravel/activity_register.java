@@ -84,7 +84,12 @@ public class activity_register extends AppCompatActivity {
                     if (serverPsd.equals(userPsd)) {
                         Log.d("phj", "비교문 같음");
                         showToast("방으로 들어왔습니다.");
-                        startActivity(new Intent(activity_register.this, home.class));
+
+                        Intent intent = new Intent(activity_register.this, home.class);
+                        intent.putExtra("name",roomnameText);
+                        startActivity(intent);
+                        finish();
+
                     } else {
                         Log.d("phj", "비교문 다름");
                         showToast("비밀번호가 틀렸습니다. 비밀번호를 확인하거나, 방 이름이 맞는지 다시 확인해 주세요.");
