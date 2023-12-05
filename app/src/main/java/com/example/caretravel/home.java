@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -12,21 +13,20 @@ import com.example.caretravel.databinding.ActivityHomeBinding;
 import com.example.caretravel.databinding.ActivityMainBinding;
 
 public class home extends AppCompatActivity {
+    private String roomName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityHomeBinding binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Intent receivedIntent = getIntent();
+        roomName = receivedIntent.getStringExtra("name");
+        Log.d("phj","홈화면에서 방이름"+roomName);
 
         binding.backButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                finish();
-            }
+            public void onClick(View view) { startActivity(new Intent(home.this,activity_register.class));}
         });
 
         binding.myInformation.setOnClickListener(new View.OnClickListener() {
@@ -36,38 +36,50 @@ public class home extends AppCompatActivity {
             }
         });
 
+        binding.travelInfoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) { startActivity(new Intent(home.this,activity_travel_info.class));}
+        });
+
+        //위 까지는 다른 설정 필요없음. 기능으로 갈때는 서버 연결해서 가야함.
+
         binding.materialButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(home.this,material.class));
+                Intent intent = new Intent(home.this, material.class);
+                intent.putExtra("name",roomName);
+                startActivity(intent);
+                finish();
             }
         });
 
         binding.planButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(home.this,make_Plan.class));
+                Intent intent = new Intent(home.this, make_Plan.class);
+                intent.putExtra("name",roomName);
+                startActivity(intent);
+                finish();
             }
         });
 
         binding.calculateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(home.this,calculation.class));
+                Intent intent = new Intent(home.this, calculation.class);
+                intent.putExtra("name",roomName);
+                startActivity(intent);
+                finish();
             }
         });
 
         binding.pathButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(home.this,path.class));
-            }
-        });
-
-        binding.travelInfoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(home.this,activity_travel_info.class));
+                Intent intent = new Intent(home.this, path.class);
+                intent.putExtra("name",roomName);
+                startActivity(intent);
+                finish();
             }
         });
 
