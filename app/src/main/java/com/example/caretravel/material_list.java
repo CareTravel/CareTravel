@@ -1,6 +1,7 @@
 package com.example.caretravel;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,18 +11,21 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.caretravel.databinding.ActivityMaterialListBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,11 +34,11 @@ import io.reactivex.rxjava3.annotations.NonNull;
 
 public class material_list extends AppCompatActivity {
     ActivityMaterialListBinding binding;
-    private FirebaseFirestore db;
-    private List<EditText> editTextList = new ArrayList<>();
-    private List<CheckBox> checkBoxList = new ArrayList<>();
-
-
+    private String roomName;
+    private void showToast(String message){
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        toast.show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +51,18 @@ public class material_list extends AppCompatActivity {
         String name = intent.getStringExtra("name");
         binding.mName.setText(name + "'s list");
 
-        initializeCloudFirestore();
+
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
+        roomName = sharedPreferences.getString("selectedRoomName", null);
+        if (roomName == null) {
+            // 선택된 방의 이름이 없는 경우, 사용자에게 메시지를 표시하고 다른 화면으로 이동합니다.
+            Toast.makeText(this, "선택된 방이 없습니다. 다시 선택해주세요.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         // 데이터 불러오기
-//        loadData(name);
+        loadMaterialToFirestore(name);
 
         // 준비물 추가하기 버튼
         binding.plusButton.setOnClickListener(new View.OnClickListener() {
@@ -64,7 +76,7 @@ public class material_list extends AppCompatActivity {
         binding.materialSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addData(name);
+                saveMaterialToFirestore(name);
             }
         });
 
@@ -78,7 +90,9 @@ public class material_list extends AppCompatActivity {
         });
 
     }
-    private void addRow(){
+
+    // 새로운 로우를 추가하는 메소드
+    private void addRow() {
         Log.d("scr", "addNewRow");
         TableLayout view = findViewById(R.id.tablelayout);
         TableRow newRow = new TableRow(this);
@@ -106,10 +120,6 @@ public class material_list extends AppCompatActivity {
         editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         editText.setHint("준비물을 입력하세요");
 
-        // 리스트에 추가
-        editTextList.add(editText);
-        checkBoxList.add(checkBox);
-
 
         // TableRow에 CheckBox와 EditText 추가
         newRow.addView(checkBox);
@@ -118,148 +128,203 @@ public class material_list extends AppCompatActivity {
         // TableLayout에 TableRow 추가
         view.addView(newRow);
     }
-    private void initializeCloudFirestore() {
-        db = FirebaseFirestore.getInstance();
+
+    private void loadMaterialToFirestore(String nameI){
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        getRoomIdFromOtherJavaFile(roomName, roomId -> {
+            // roomId를 받아왔을 때 실행되는 코드
+            loadData(firestore, roomId, nameI);
+        });
+    }
+    private void saveMaterialToFirestore(String nameI) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        getRoomIdFromOtherJavaFile(roomName, roomId -> {
+            // roomId를 받아왔을 때 실행되는 코드
+            saveMaterialToFirestore(firestore, roomId, nameI);
+        });
     }
 
-    private void addData(String name) {
-        int lastIndex = 4;
+    private void loadData(FirebaseFirestore firestore, String roomId, String nameI){
+        firestore.collection("rooms").document(roomId).collection("준비물").document(nameI)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists()) {
+                                // 문서가 존재하는 경우
+                                // "materials" 필드의 존재 여부 확인
+                                if (document.contains("materials")) {
+                                    // "materials" 필드에 저장된 리스트 가져오기
+                                    List<Map<String, Object>> materialsList = (List<Map<String, Object>>) document.get("materials");
 
-        DocumentReference userMaterialsDocRef = db.collection("rooms")
-                .document("c")
-                .collection("준비물")
-                .document(name);
+                                    // 이전에 정의한 0번부터 4번 인덱스까지의 EditText와 CheckBox에 데이터 설정
+                                    for (int i = 0; i < 5; i++) {
+                                        Log.d("scr", "기존데이터");
+                                        Map<String, Object> material = materialsList.get(i);
+                                        String editTextContent = (String) material.get("edittext");
+                                        boolean isChecked = (boolean) material.get("checkbox");
 
-        TableLayout tableLayout = findViewById(R.id.tablelayout);
-        int rowCount = tableLayout.getChildCount();
-        if (rowCount > 0) {
-            // 마지막 로우의 인덱스를 찾습니다.
-            lastIndex = tableLayout.indexOfChild(tableLayout.getChildAt(rowCount - 1));
-        }
-        for (int i = 0; i <= lastIndex; i++) {
-            Log.d("scr", "ddd");
-            TableRow lastRow = (TableRow) tableLayout.getChildAt(i);
-            CheckBox checkBox = (CheckBox) lastRow.getChildAt(0);
-            EditText editText = (EditText) lastRow.getChildAt(1);
-            String material_list = editText.getText().toString();
-            Map<String, Object> material = new HashMap<>();
-            material.put(material_list, Arrays.asList(checkBox.isChecked(), material_list));
-        }
-    }
+                                        EditText[] editTexts = new EditText[5];
+                                        CheckBox[] checkBoxes = new CheckBox[5];
+                                        editTexts[i] = findViewById(getResources().getIdentifier("material_" + i, "id", "com.example.caretravel"));
+                                        checkBoxes[i] = findViewById(getResources().getIdentifier("checkbox_" + i, "id", "com.example.caretravel"));
 
+                                        if (!editTextContent.equals("")) {
+                                            editTexts[i].setText(editTextContent);
+                                        }
+                                        checkBoxes[i].setChecked(isChecked);
+                                    }
 
-
-//        if (db != null && name != null) {
-//            // Firestore 경로 설정
-//            DocumentReference userMaterialsDocRef = db.collection("rooms")
-//                    .document("c")
-//                    .collection("준비물")
-//                    .document(name);
-//
-//            TableLayout tableLayout = findViewById(R.id.tablelayout);
-//            int rowCount = tableLayout.getChildCount();
-//            if (rowCount > 0) {
-//                // 마지막 로우의 인덱스를 찾습니다.
-//                lastIndex = tableLayout.indexOfChild(tableLayout.getChildAt(rowCount - 1));
-//            }
-//            for (int i=0; i <= lastIndex; i++) {
-//                TableRow lastRow = (TableRow) tableLayout.getChildAt(i);
-//                CheckBox chekBox = (CheckBox) lastRow.getChildAt(0);
-//                EditText editText = (EditText) lastRow.getChildAt(1);
-//                String material_list = editText.getText().toString();
-//                Map<String, Object> meterial = new HashMap<>();
-//                material.put()
-//            }
-//
-//            // 데이터 준비
-//            List<Map<String, Object>> materialsList = new ArrayList<>();
-//
-//            for (int i = 0; i < editTextList.size(); i++) {
-//                CheckBox checkBox = checkBoxList.get(i);
-//                EditText editText = editTextList.get(i);
-//                Log.d("scr", "add data");
-//
-//                // 데이터 맵 생성
-//                Map<String, Object> materialData = new HashMap<>();
-//                materialData.put("checkbox", checkBox.isChecked());
-//                materialData.put("material", editText.getText().toString());
-//
-//                // 리스트에 추가
-//                materialsList.add(materialData);
-//            }
-//
-//            // Firestore에 업로드
-//            userMaterialsDocRef.set(Collections.singletonMap("materials", materialsList))
-//                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                        @Override
-//                        public void onSuccess(Void aVoid) {
-//                            Log.d("scr", "Firestore에 데이터가 추가되었습니다.");
-//                        }
-//                    })
-//                    .addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            Log.w("scr", "Firestore에 데이터 추가 실패", e);
-//                        }
-//                    });
-//        }
-//    }
-
-    private void loadData(String name) {
-        // Firestore 초기화
-        Log.d("scr", "load data");
-
-        if (db != null && name != null) {
-            // "materials" 컬렉션에서 사용자의 이름으로 문서 가져오기
-            DocumentReference userMaterialsDocRef = db.collection("rooms").document("c").collection("준비물").document(name);
-
-            // Firestore에서 데이터 불러오기
-            userMaterialsDocRef.get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            if (documentSnapshot.exists()) {
-                                // 문서가 존재할 때 데이터 불러오기
-                                List<Map<String, Object>> materialsList =
-                                        (List<Map<String, Object>>) documentSnapshot.get("materials");
-
-                                // 데이터를 UI에 적용
-                                applyDataToUI(materialsList);
+                                    // 나머지 데이터 불러 오기
+                                    for (int i = 5; i < materialsList.size(); i++) {
+                                        Map<String, Object> material = materialsList.get(i);
+                                        String editTextContent = (String) material.get("edittext");
+                                        boolean isChecked = (boolean) material.get("checkbox");
+                                        loadRow(editTextContent, isChecked);
+                                    }
+                                } else {
+                                    // "materials" 필드가 존재하지 않는 경우
+                                    Log.d("FirestoreData", "No 'materials' field in the document");
+                                    }
+                            } else {
+                                // 문서가 존재하지 않는 경우
+                                Log.d("FirestoreData", "No such document");
                             }
+                        } else {
+                            Log.d("FirestoreData", "get failed with ", task.getException());
                         }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w("scr", "Firestore에서 데이터 불러오기 실패", e);
-                        }
-                    });
+                    }
+                });
+
+    }
+    private void loadRow(String editTextContent, boolean isChecked) {
+        Log.d("scr", "load");
+        TableLayout view = findViewById(R.id.tablelayout);
+        TableRow newRow = new TableRow(this);
+        CheckBox checkBox = new CheckBox(this);
+        EditText editText = new EditText(this);
+
+        // CheckBox와 EditText 마진
+        TableRow.LayoutParams checkBoxParams = new TableRow.LayoutParams(
+                TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT
+        );
+        checkBoxParams.setMargins(40, 0, 0, 0);
+
+        TableRow.LayoutParams editTextParams = new TableRow.LayoutParams(
+                TableRow.LayoutParams.WRAP_CONTENT,
+                TableRow.LayoutParams.WRAP_CONTENT
+        );
+        editTextParams.setMargins(15, 0, 0, 0);
+
+        checkBox.setLayoutParams(checkBoxParams);
+        editText.setLayoutParams(editTextParams);
+
+        // EditText 설정
+        editText.setBackgroundColor(Color.TRANSPARENT);
+        editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+
+        // 상태 불러오기
+        if (editTextContent.equals("")){
+            editText.setHint("준비물을 입력하세요");
         }
+        else{
+            editText.setText(editTextContent);
+        }
+        checkBox.setChecked(isChecked);
+
+        // TableRow에 CheckBox와 EditText 추가
+        newRow.addView(checkBox);
+        newRow.addView(editText);
+
+        // TableLayout에 TableRow 추가
+        view.addView(newRow);
     }
 
-    private void applyDataToUI(List<Map<String, Object>> materialsList) {
-        // UI에 데이터를 적용하는 로직을 구현
-        // materialsList에서 데이터를 읽어와서 UI에 적용하는 방식으로 구현
-        TableLayout tableLayout = findViewById(R.id.tablelayout);
+    // 데이터를 데이터 베이스에 저장
+    private void saveMaterialToFirestore(FirebaseFirestore firestore, String roomId, String nameI) {
+        TableLayout view = findViewById(R.id.tablelayout);
+        int rowCount = view.getChildCount();
+        boolean isChecked = false;
+        String editTextContent = null;
 
-        for (Map<String, Object> materialData : materialsList) {
-            boolean isChecked = (boolean) materialData.get("isChecked");
-            String text = (String) materialData.get("text");
+        // 각 준비물의 정보를 담을 ArrayList
+        ArrayList<Map<String, Object>> materialsList = new ArrayList<>();
 
-            // 새로운 TableRow 생성
-            TableRow newRow = new TableRow(this);
+        for (int i = 0; i < rowCount; i++) {
+            View tableview = view.getChildAt(i);
 
-            // CheckBox와 EditText 추가
-            CheckBox checkBox = new CheckBox(this);
-            checkBox.setChecked(isChecked);
-            newRow.addView(checkBox);
+            if (tableview instanceof TableRow) {
+                TableRow row = (TableRow) tableview;
 
-            EditText editText = new EditText(this);
-            editText.setText(text);
-            newRow.addView(editText);
+                for (int j = 0; j < row.getChildCount(); j++) {
+                    View childView = row.getChildAt(j);
 
-            // TableLayout에 추가
-            tableLayout.addView(newRow);
+                    if (childView instanceof EditText) {
+                        // EditText를 찾은 경우
+                        EditText editText = (EditText) childView;
+                        editTextContent = editText.getText().toString();
+                    }
+
+                    if (childView instanceof CheckBox) {
+                        // CheckBox를 찾은 경우
+                        CheckBox checkBox = (CheckBox) childView;
+                        isChecked = checkBox.isChecked();
+                    }
+                }
+            }
+            Map<String, Object> material = new HashMap<>();
+            material.put("edittext", editTextContent);
+            material.put("checkbox", isChecked);
+            materialsList.add(material);
         }
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", nameI);
+        data.put("materials", materialsList);
+
+        firestore.collection("rooms").document(roomId).collection("준비물").document(nameI)
+                .set(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        showToast("저장했습니다.");
+                        Log.d("scr", "저장했습니다.");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("scr", "저장에 실패했습니다");
+                    }
+                });
+    }
+
+    private void getRoomIdFromOtherJavaFile(String roomName, material_list.OnRoomIdReceivedListener listener) {
+        // Firebase Firestore에 접근하여 방 정보의 다큐먼트 ID를 조회하는 로직 구현
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        CollectionReference roomsCollection = firestore.collection("rooms");
+
+        roomsCollection.whereEqualTo("name", roomName).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                QuerySnapshot querySnapshot = task.getResult();
+                if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                    DocumentSnapshot documentSnapshot = querySnapshot.getDocuments().get(0);
+                    String roomId = documentSnapshot.getId();
+                    listener.onRoomIdReceived(roomId);  // roomId를 Listener를 통해 반환
+                } else {
+                    Toast.makeText(material_list.this, "방 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(material_list.this, "방 정보를 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    interface OnRoomIdReceivedListener {
+        void onRoomIdReceived(String roomId);
     }
 }
+
+
