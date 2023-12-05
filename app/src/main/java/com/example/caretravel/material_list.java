@@ -1,7 +1,6 @@
 package com.example.caretravel;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,10 +19,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +31,7 @@ import io.reactivex.rxjava3.annotations.NonNull;
 
 public class material_list extends AppCompatActivity {
     ActivityMaterialListBinding binding;
+    private FirebaseFirestore db;
     private String roomName;
     private void showToast(String message){
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
@@ -48,21 +46,15 @@ public class material_list extends AppCompatActivity {
 
         // 이름 가져오기
         Intent intent = getIntent();
-        String name = intent.getStringExtra("name");
-        binding.mName.setText(name + "'s list");
+        String userName = intent.getStringExtra("userName");
+        roomName = intent.getStringExtra("roomName");
+        binding.mName.setText(userName + "'s list");
 
-
-        SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
-        roomName = sharedPreferences.getString("selectedRoomName", null);
-        if (roomName == null) {
-            // 선택된 방의 이름이 없는 경우, 사용자에게 메시지를 표시하고 다른 화면으로 이동합니다.
-            Toast.makeText(this, "선택된 방이 없습니다. 다시 선택해주세요.", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
+        // 데이터 베이스
+        initializeCloudFirestore();
 
         // 데이터 불러오기
-        loadMaterialToFirestore(name);
+        loadData(roomName, userName);
 
         // 준비물 추가하기 버튼
         binding.plusButton.setOnClickListener(new View.OnClickListener() {
@@ -76,10 +68,9 @@ public class material_list extends AppCompatActivity {
         binding.materialSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveMaterialToFirestore(name);
+                addData(roomName, userName);
             }
         });
-
 
         // 뒤로가기 버튼
         binding.backButton.setOnClickListener(new View.OnClickListener() {
@@ -89,6 +80,10 @@ public class material_list extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void initializeCloudFirestore() {
+        db = FirebaseFirestore.getInstance();
     }
 
     // 새로운 로우를 추가하는 메소드
@@ -129,23 +124,9 @@ public class material_list extends AppCompatActivity {
         view.addView(newRow);
     }
 
-    private void loadMaterialToFirestore(String nameI){
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        getRoomIdFromOtherJavaFile(roomName, roomId -> {
-            // roomId를 받아왔을 때 실행되는 코드
-            loadData(firestore, roomId, nameI);
-        });
-    }
-    private void saveMaterialToFirestore(String nameI) {
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        getRoomIdFromOtherJavaFile(roomName, roomId -> {
-            // roomId를 받아왔을 때 실행되는 코드
-            saveMaterialToFirestore(firestore, roomId, nameI);
-        });
-    }
-
-    private void loadData(FirebaseFirestore firestore, String roomId, String nameI){
-        firestore.collection("rooms").document(roomId).collection("준비물").document(nameI)
+    // 데이터 불러오기
+    private void loadData(String roomName, String userName){
+        db.collection("rooms").document(roomName).collection("준비물").document(userName)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -199,6 +180,7 @@ public class material_list extends AppCompatActivity {
                 });
 
     }
+    // 있는 데이터 불러올 때 로우 추가
     private void loadRow(String editTextContent, boolean isChecked) {
         Log.d("scr", "load");
         TableLayout view = findViewById(R.id.tablelayout);
@@ -244,7 +226,7 @@ public class material_list extends AppCompatActivity {
     }
 
     // 데이터를 데이터 베이스에 저장
-    private void saveMaterialToFirestore(FirebaseFirestore firestore, String roomId, String nameI) {
+    private void addData(String roomName, String userName) {
         TableLayout view = findViewById(R.id.tablelayout);
         int rowCount = view.getChildCount();
         boolean isChecked = false;
@@ -281,10 +263,10 @@ public class material_list extends AppCompatActivity {
             materialsList.add(material);
         }
         Map<String, Object> data = new HashMap<>();
-        data.put("name", nameI);
+        data.put("name", userName);
         data.put("materials", materialsList);
 
-        firestore.collection("rooms").document(roomId).collection("준비물").document(nameI)
+        db.collection("rooms").document(roomName).collection("준비물").document(userName)
                 .set(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -301,30 +283,6 @@ public class material_list extends AppCompatActivity {
                 });
     }
 
-    private void getRoomIdFromOtherJavaFile(String roomName, material_list.OnRoomIdReceivedListener listener) {
-        // Firebase Firestore에 접근하여 방 정보의 다큐먼트 ID를 조회하는 로직 구현
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        CollectionReference roomsCollection = firestore.collection("rooms");
-
-        roomsCollection.whereEqualTo("name", roomName).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                QuerySnapshot querySnapshot = task.getResult();
-                if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                    DocumentSnapshot documentSnapshot = querySnapshot.getDocuments().get(0);
-                    String roomId = documentSnapshot.getId();
-                    listener.onRoomIdReceived(roomId);  // roomId를 Listener를 통해 반환
-                } else {
-                    Toast.makeText(material_list.this, "방 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(material_list.this, "방 정보를 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    interface OnRoomIdReceivedListener {
-        void onRoomIdReceived(String roomId);
-    }
 }
 
 

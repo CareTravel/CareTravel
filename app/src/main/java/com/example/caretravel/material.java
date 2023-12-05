@@ -2,7 +2,6 @@ package com.example.caretravel;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,8 +18,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -32,7 +28,7 @@ import java.util.Map;
 import io.reactivex.rxjava3.annotations.NonNull;
 
 public class material extends AppCompatActivity {
-
+    private FirebaseFirestore db;
     public ActivityMaterialBinding binding;
     AlertDialog nameDialog;
     private String roomName;
@@ -44,18 +40,15 @@ public class material extends AppCompatActivity {
         binding = ActivityMaterialBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
         // 입장한 방 이름 가져오기
-        SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
-        roomName = sharedPreferences.getString("selectedRoomName", null);
-        if (roomName == null) {
-            // 선택된 방의 이름이 없는 경우, 사용자에게 메시지를 표시하고 다른 화면으로 이동합니다.
-            Toast.makeText(this, "선택된 방이 없습니다. 다시 선택해주세요.", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
+        Intent intent = getIntent();
+        roomName = intent.getStringExtra("name");
+
+        // 데이터 베이스
+        initializeCloudFirestore();
+
         // 먼저 등록한 버튼 출력
-        saveNameToFirestore();
+        loadData(roomName);
 
         // 뒤로가기 버튼
         binding.backButton.setOnClickListener(new View.OnClickListener() {
@@ -76,9 +69,9 @@ public class material extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     if(dialog==nameDialog && which==DialogInterface.BUTTON_POSITIVE){
                         EditText name = nameDialog.findViewById(R.id.list_name);
-                        String nameI = name.getText().toString();
-                        saveNameToFirestore(nameI);
-                        addButton(nameI);
+                        String userName = name.getText().toString();
+                        addData(roomName, userName);
+                        addButton(userName);
                     }
                 }
             });
@@ -87,30 +80,17 @@ public class material extends AppCompatActivity {
             nameDialog.show();
         });
     }
-
-    // 먼저 등록 되어있는 리스트 가져올 때 방 이름 얻는 메소드
-    private void saveNameToFirestore(){
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        getRoomIdFromOtherJavaFile(roomName, roomId -> {
-            // roomId를 받아왔을 때 실행되는 코드
-            loadData(firestore, roomId);
-        });
+    private void initializeCloudFirestore() {
+        db = FirebaseFirestore.getInstance();
     }
 
-    // 이름 저장
-    private void saveNameToFirestore(String nameI) {
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        getRoomIdFromOtherJavaFile(roomName, roomId -> {
-            // roomId를 받아왔을 때 실행되는 코드
-            saveNameToFirestore(firestore, roomId, nameI);
-        });
-    }
-    private void saveNameToFirestore(FirebaseFirestore firestore, String roomId, String nameI) {
+    // 데이터 저장
+    private void addData(String roomName, String userName) {
         Map<String, Object> listname = new HashMap<>();
-        listname.put("name", nameI);
+        listname.put("name", userName);
 
         // 데이터 베이스에 저장
-        firestore.collection("rooms").document(roomId).collection("준비물").document(nameI)
+        db.collection("rooms").document(roomName).collection("준비물").document(userName)
                 .set(listname)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -128,9 +108,9 @@ public class material extends AppCompatActivity {
     }
 
     // 데이터 가져오는 메소드
-    private void loadData(FirebaseFirestore firestore, String roomId){
-        firestore.collection("rooms")
-                .document(roomId)
+    private void loadData(String roomName){
+        db.collection("rooms")
+                .document(roomName)
                 .collection("준비물")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -138,8 +118,8 @@ public class material extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                String name = document.getString("name");
-                                addButton(name);
+                                String userName = document.getString("name");
+                                addButton(userName);
                                 Log.d("scr", "리스트를 모두 불러왔습니다.");
                             }
                         } else {
@@ -149,36 +129,11 @@ public class material extends AppCompatActivity {
                 });
     }
 
-    private void getRoomIdFromOtherJavaFile(String roomName, material.OnRoomIdReceivedListener listener) {
-        // Firebase Firestore에 접근하여 방 정보의 다큐먼트 ID를 조회하는 로직 구현
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        CollectionReference roomsCollection = firestore.collection("rooms");
-
-        roomsCollection.whereEqualTo("name", roomName).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                QuerySnapshot querySnapshot = task.getResult();
-                if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                    DocumentSnapshot documentSnapshot = querySnapshot.getDocuments().get(0);
-                    String roomId = documentSnapshot.getId();
-                    listener.onRoomIdReceived(roomId);  // roomId를 Listener를 통해 반환
-                } else {
-                    Toast.makeText(material.this, "방 정보를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(material.this, "방 정보를 가져오는데 실패했습니다.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    interface OnRoomIdReceivedListener {
-        void onRoomIdReceived(String roomId);
-    }
-
     // 버튼 추가
-    private void addButton(String name){
+    private void addButton(String userName){
         LinearLayout view = findViewById(R.id.linearlayout);
         Button listButton = new Button(material.this);
-        listButton.setText(name + "'s list");
+        listButton.setText(userName + "'s list");
         listButton.setTextSize(30);
         listButton.setHeight(300);
         view.addView(listButton);
@@ -188,7 +143,8 @@ public class material extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(material.this, material_list.class);
-                intent.putExtra("name", name);
+                intent.putExtra("userName", userName);
+                intent.putExtra("roomName", roomName);
                 startActivity(intent);
             }
         });
