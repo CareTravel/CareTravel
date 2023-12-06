@@ -11,6 +11,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,6 +52,9 @@ public class material_list extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
         roomName = sharedPreferences.getString("currentRoomName", null);
 
+        // 리스트 이름 불러오기
+        TextView textView = findViewById(R.id.mName);
+        textView.setText(userName + "'s list");
 
         // 데이터 베이스
         initializeCloudFirestore();

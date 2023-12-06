@@ -44,6 +44,7 @@ public class material extends AppCompatActivity {
         // 입장한 방 이름 가져오기
         SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
         roomName = sharedPreferences.getString("currentRoomName", null);
+        Log.d("scr", roomName);
 
         // 데이터 베이스
         initializeCloudFirestore();
