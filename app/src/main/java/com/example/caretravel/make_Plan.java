@@ -61,7 +61,8 @@ public class make_Plan extends AppCompatActivity {
 
         // SharedPreferences에서 선택된 방의 이름을 가져옵니다.
         SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
-        roomName = sharedPreferences.getString("selectedRoomName", null);
+        roomName = sharedPreferences.getString("currentRoomName", null);
+        Log.d("lay", "Room name is: " + roomName);
 
         FirebaseApp.initializeApp(this);
 
