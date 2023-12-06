@@ -29,7 +29,7 @@ public class activity_travel_info extends AppCompatActivity {
 
         // SharedPreferences에서 선택된 방의 이름을 가져옵니다.
         SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
-        roomName = sharedPreferences.getString("selectedRoomName", null);
+        roomName = sharedPreferences.getString("currentRoomName", null);
 
         // 뒤로가기 버튼
         binding.backButton.setOnClickListener(new View.OnClickListener() {
