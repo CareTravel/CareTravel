@@ -2,6 +2,7 @@ package com.example.caretravel;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,8 +42,8 @@ public class material extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // 입장한 방 이름 가져오기
-        Intent intent = getIntent();
-        roomName = intent.getStringExtra("name");
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
+        roomName = sharedPreferences.getString("currentRoomName", null);
 
         // 데이터 베이스
         initializeCloudFirestore();
@@ -144,7 +145,6 @@ public class material extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(material.this, material_list.class);
                 intent.putExtra("userName", userName);
-                intent.putExtra("roomName", roomName);
                 startActivity(intent);
             }
         });

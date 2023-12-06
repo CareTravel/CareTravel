@@ -1,6 +1,7 @@
 package com.example.caretravel;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,8 +48,9 @@ public class material_list extends AppCompatActivity {
         // 이름 가져오기
         Intent intent = getIntent();
         String userName = intent.getStringExtra("userName");
-        roomName = intent.getStringExtra("roomName");
-        binding.mName.setText(userName + "'s list");
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
+        roomName = sharedPreferences.getString("currentRoomName", null);
+
 
         // 데이터 베이스
         initializeCloudFirestore();
