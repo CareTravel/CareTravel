@@ -25,11 +25,12 @@ public class home extends AppCompatActivity {
         roomName = receivedIntent.getStringExtra("name");
         Log.d("phj","홈화면에서 방이름"+roomName);
 
-        //수정
-        SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("currentRoomName", roomName);
-        editor.apply();
+        if(roomName != null){
+            SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("currentRoomName", roomName);
+            editor.apply();
+        }
 
         binding.backButton.setOnClickListener(new View.OnClickListener() {
             @Override
