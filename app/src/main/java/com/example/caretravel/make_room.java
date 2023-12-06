@@ -3,7 +3,6 @@ package com.example.caretravel;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -150,12 +149,6 @@ public class make_room extends AppCompatActivity {
                                 .addOnSuccessListener(aVoid -> {
                                     // 추가 성공
                                     Toast.makeText(make_room.this, "방이 성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
-
-                                    // 방의 이름을 SharedPreferences에 저장
-                                    SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                                    editor.putString("selectedRoomName", documentName);
-                                    editor.apply();
 
                                     // activity_register.xml로 화면 전환
                                     Intent intent = new Intent(make_room.this, activity_register.class);
