@@ -52,7 +52,6 @@ public class make_Plan extends AppCompatActivity {
     private LinearLayout rootLayout;
     private String roomName;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,10 +66,8 @@ public class make_Plan extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
 
         binding.planSave.setOnClickListener(v -> savePlanToFirestore());
-
         // 뒤로가기 버튼
         binding.backButton.setOnClickListener(v -> startActivity(new Intent(make_Plan.this, home.class)));
-
         button1 = binding.planTime1;
         button2 = binding.planTime2;
         // day_plus 버튼 선언
@@ -412,7 +409,6 @@ public class make_Plan extends AppCompatActivity {
         editText.setPadding(0, 0, 0, 0);
         editText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         editText.setInputType(InputType.TYPE_CLASS_TEXT);
-        editText.setId(View.generateViewId()); // 새로운 ID 생성
         return editText;
     }
 }
