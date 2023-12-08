@@ -30,8 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/calculate_name"
             android:columnCount="2"
-            android:orientation="horizontal"
-            android:rowCount="27">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="150dp"

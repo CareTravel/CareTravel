@@ -90,42 +90,37 @@
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:text="계산 할 인원 : "
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginLeft="40dp"-->
+<!--            android:text="계산 할 인원 : "-->
+<!--            android:textColor="@color/black"-->
+<!--            android:textSize="20sp" />-->
 
-        <EditText
-            android:id="@+id/calculate_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+<!--        <EditText-->
+<!--            android:id="@+id/calculate_number"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:inputType="number"-->
+<!--            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="명"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="명"-->
+<!--            android:textColor="@color/black"-->
+<!--            android:textSize="20sp" />-->
 
         <Button
             android:id="@+id/calculate_Button"
-            android:layout_width="150dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="40dp"
             android:backgroundTint="#D9D9D9"
+            android:layout_marginLeft="280dp"
             android:text="계산하기"
             android:textSize="20sp" />
-    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -171,8 +166,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/calculate_name"
             android:columnCount="2"
-            android:orientation="horizontal"
-            android:rowCount="27">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="150dp"
