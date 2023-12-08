@@ -61,4 +61,8 @@ dependencies {
 
     // Declare the dependency for the Cloud Firestore library
     // When using the BoM, you don't specify versions in Firebase library dependencies
+
+    //  구글맵 사용
+    implementation ("com.google.android.gms:play-services-maps:17.0.0")
+    implementation ("com.google.android.gms:play-services-location:17.0.0")
 }
