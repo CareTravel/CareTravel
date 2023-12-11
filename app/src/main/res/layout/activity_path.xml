@@ -30,20 +30,25 @@
             android:textStyle="bold" />
 
     </androidx.appcompat.widget.Toolbar>
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/path_mapLayout">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="위치 등록"
-        android:textColor="@color/black"
-        android:textSize="25sp"
-        android:textStyle="bold" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="위치 등록"
+            android:textColor="@color/black"
+            android:textSize="25sp"
+            android:textStyle="bold" />
 
     <Button
         android:id="@+id/map_save"
@@ -92,15 +97,16 @@
         android:id="@+id/pathTableLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:layout_marginHorizontal="40dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="70dp"
         android:stretchColumns="0,1"
         android:background="@android:color/transparent"
         android:padding="1dp">
         <TableRow
             android:background="@android:color/transparent">
-            <TextView
-                android:id="@+id/plan_day"
+            <Button
+                android:id="@+id/path_day"
                 android:layout_span="2"
                 android:layout_width="match_parent"
                 android:background="@drawable/day_plan"
@@ -177,5 +183,5 @@
                 android:inputType="text"/>
         </TableRow>
     </TableLayout>
-
+    </FrameLayout>
 </LinearLayout>
