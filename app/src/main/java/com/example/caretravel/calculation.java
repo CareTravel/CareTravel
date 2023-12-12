@@ -18,16 +18,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.caretravel.databinding.ActivityCalculationBinding;
 import com.example.caretravel.databinding.CalculateLayoutBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -41,6 +45,11 @@ public class calculation extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private RelativeLayout rootLayout;
     private RelativeLayout relativeLayoutTable;
+    private int userCount;
+    int totalPrice; // 현재 로그인 되어 있는 계정의 금액
+    int a;
+    int total=0; // 다른 사람 금액
+    int totalAll=0; // 총계
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +76,8 @@ public class calculation extends AppCompatActivity {
             addNewRelativeLayout(linearLayout);
         });
 
+
+
         binding.calculateSave.setOnClickListener(v -> addData(roomName));
 
         initFirebaseAuth();
@@ -78,6 +89,14 @@ public class calculation extends AppCompatActivity {
 
         FirebaseFirestore.getInstance();
         loadData(db, roomName);
+
+        // 계산하기 버튼
+        binding.calculateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                countUser(roomName, name);
+            }
+        });
     }
 
     private void initializeCloudFirestore() {
@@ -208,6 +227,93 @@ public class calculation extends AppCompatActivity {
         return Math.round(dp * density);
     }
 
+    // 계산하기 버튼 눌렀을 때 호출하는 함수
+    private void countUser (String roomName, String name) {
+        List<Integer> userExpenses = new ArrayList<>();
+        List<String> userName = new ArrayList<>();
+        db.collection("rooms").document(roomName).collection("정산")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    // 총 몇 명인지 (n)
+                    userCount = queryDocumentSnapshots.size();
+                    Log.d("scr", "사용자 : " + userCount);
+
+                    // 각 문서에서 price 값을 가져와서 더하기
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        if (document.exists()) {
+                            // "List" 필드의 존재 여부 확인
+                            if (document.contains("List")) {
+                                // price 필드에 저장된 리스트 가져오기
+                                List<Map<String, Object>> priceList = (List<Map<String, Object>>) document.get("List");
+
+                                // price 값만 추출하여 더하기
+                                total = 0;
+                                for (Map<String, Object> list : priceList) {
+                                    int a;
+                                    String price = (String) list.get("price");
+                                    if (price.equals("")){
+                                        a = 0;
+                                    }
+                                    else {
+                                        a = Integer.parseInt(price);
+                                    }
+                                    total += a;
+                                }
+                                totalAll += total;
+                                Log.d("scr", "총계는" + totalAll);
+                                // 개별 사용자의 총 지출 금액을 n으로 나누어 배열에 저장
+                                total /= userCount;
+                                userExpenses.add(total);
+                            }
+                            if (document.contains("name")){
+                                String allName = document.getString("name");
+                                Log.d("scr", "사용자 이름: " + allName);
+                                userName.add(allName);
+                            }
+                        }
+                    }
+                    for (int i=0; i < userName.size(); i++){
+                        if (name.equals(userName.get(i))){
+                            totalPrice = userExpenses.get(i);
+                            break;
+                        }
+                    }
+                    // 기존 뷰에 있는 텍스트뷰 없애기
+                    binding.first.setVisibility(View.GONE);
+                    binding.second.setVisibility(View.GONE);
+                    // 정산 내역 구하기
+                    for (int i=0; i<userCount; i++){
+                        if (totalPrice < userExpenses.get(i)){
+                            int deposit = (userExpenses.get(i) - totalPrice);
+                            String depositName = userName.get(i);
+                            Log.d("scr", name + "이" + depositName+ "에게" + deposit + "원 줘야함");
+                            loadDeposit(depositName, deposit, name); // 화면에 출력
+                        }
+                    }
+                    loadAllPrice(totalAll);
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("scr", "개수를 가져오지 못했음");
+                });
+
+    }
+    private void loadDeposit(String depositName, int deposit, String name){
+        LinearLayout rootView = findViewById(R.id.depositLayout);
+        LinearLayout linearLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.deposit_layout, null);
+        TextView myName = linearLayout.findViewById(R.id.myName);
+        myName.setText(name);
+        TextView another = linearLayout.findViewById(R.id.anotherName);
+        another.setText(depositName);
+        TextView price = linearLayout.findViewById(R.id.price);
+        price.setText(String.valueOf(deposit));
+        rootView.addView(linearLayout);
+
+    }
+    private void loadAllPrice(int totalAll){
+        String allString = String.valueOf(totalAll);
+        binding.total.setText(allString);
+    }
+
     private void addData(String roomName) {
         LinearLayout rootLayout = binding.linearLayout;
         String name = null;
@@ -228,6 +334,9 @@ public class calculation extends AppCompatActivity {
                     if (innerView instanceof EditText) {
                         EditText nameEdit = (EditText) innerView;
                         name = nameEdit.getText().toString();
+                        if (name.equals("")){
+                            showToast("이름이 비워져있습니다.");
+                        }
                     }
 
                     // GridLayout인 경우
@@ -253,20 +362,29 @@ public class calculation extends AppCompatActivity {
                     }
                 }
                 // Firestore에 저장할 데이터 맵 생성
-                data.put("name", name);
-                data.put("price", priceList);
+                if(!name.equals("")){
+                    data.put("name", name);
+                    data.put("List", priceList);
+                    // Firestore에 데이터 저장
+                    db.collection("rooms").document(roomName).collection("정산").document(name)
+                            .set(data)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    showToast("저장했습니다.");
+                                    Log.d("scr", "저장했습니다.");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d("scr", "저장에 실패했습니다");
+                                }
+                            });
+                }
             }
-            // Firestore에 데이터 저장
-            db.collection("rooms").document(roomName).collection("정산").document(name)
-                    .set(data)
-                    .addOnSuccessListener(aVoid -> {
-                        showToast("저장했습니다.");
-                        Log.d("scr", "저장했습니다.");
-                    })
-                    .addOnFailureListener(e -> Log.d("scr", "저장에 실패했습니다"));
         }
     }
-
     private void loadData(FirebaseFirestore db, String roomName) {
         db.collection("rooms")
                 .document(roomName)
