@@ -23,29 +23,32 @@ import androidx.core.content.ContextCompat;
 
 import com.example.caretravel.databinding.ActivityCalculationBinding;
 import com.example.caretravel.databinding.CalculateLayoutBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import io.reactivex.rxjava3.annotations.NonNull;
 public class calculation extends AppCompatActivity {
     private ActivityCalculationBinding binding;
     private String roomName;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
+    private RelativeLayout rootLayout;
+    private RelativeLayout relativeLayoutTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityCalculationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        rootLayout = binding.relativeLayoutTable;
 
         initializeCloudFirestore();
 
@@ -64,12 +67,7 @@ public class calculation extends AppCompatActivity {
             addNewRelativeLayout(linearLayout);
         });
 
-        binding.calculateSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addData(roomName);
-            }
-        });
+        binding.calculateSave.setOnClickListener(v -> addData(roomName));
 
         initFirebaseAuth();
         FirebaseUser user = mAuth.getCurrentUser();
@@ -77,11 +75,24 @@ public class calculation extends AppCompatActivity {
         TextView myName = findViewById(R.id.myName);
         String name = user.getDisplayName();
         myName.setText(name);
+
+        FirebaseFirestore.getInstance();
+        loadData(db, roomName);
+    }
+
+    private void initializeCloudFirestore() {
+        db = FirebaseFirestore.getInstance();
+    }
+
+    private void showToast(String message) {
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     private void initFirebaseAuth() {
         mAuth = FirebaseAuth.getInstance();
     }
+
     private void addNewRelativeLayout(LinearLayout linearLayout) {
         // LayoutInflater 생성
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -103,12 +114,15 @@ public class calculation extends AppCompatActivity {
         params.setMargins(0, marginInPixels, 0, 0);  // 상단에 30dp 마진 설정
         newRelativeLayout.setLayoutParams(params);
 
-        Button button = binding.contentPlus;
-        button.setId(View.generateViewId());
-        button.setOnClickListener(v -> {
-            addEditTextToRelativeLayout(newRelativeLayout, true);  // 첫 번째 EditText, 마진 적용
-            addEditTextToRelativeLayout(newRelativeLayout, false);  // 그 외 EditText, 마진 미적용
+        // GridLayout에 새로운 ID 설정
+        GridLayout newGridLayout = binding.gridlayoutTable2;  // binding을 사용하여 참조 가져오기
+        newGridLayout.setId(View.generateViewId());  // 새로운 ID 설정
 
+        // 새로운 contentPlus 버튼 설정
+        Button contentPlusBtn = binding.contentPlus;
+        contentPlusBtn.setId(View.generateViewId());
+        contentPlusBtn.setOnClickListener(v -> {
+            addNewRow(newGridLayout);  // 클릭 리스너를 설정합니다.
         });
 
         // LinearLayout에 복제한 RelativeLayout 추가
@@ -245,28 +259,90 @@ public class calculation extends AppCompatActivity {
             // Firestore에 데이터 저장
             db.collection("rooms").document(roomName).collection("정산").document(name)
                     .set(data)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            showToast("저장했습니다.");
-                            Log.d("scr", "저장했습니다.");
-                        }
+                    .addOnSuccessListener(aVoid -> {
+                        showToast("저장했습니다.");
+                        Log.d("scr", "저장했습니다.");
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.d("scr", "저장에 실패했습니다");
-                        }
-                    });
+                    .addOnFailureListener(e -> Log.d("scr", "저장에 실패했습니다"));
         }
     }
 
-    private void initializeCloudFirestore() {
-        db = FirebaseFirestore.getInstance();
-    }
-    private void showToast(String message){
-        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
-        toast.show();
-    }
+    private void loadData(FirebaseFirestore db, String roomName) {
+        db.collection("rooms")
+                .document(roomName)
+                .collection("정산")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot result = task.getResult();
+                        if (!result.isEmpty()) {
+                            LinearLayout mainLayout = findViewById(R.id.linearLayout); // 메인 레이아웃을 찾습니다.
+                            // 기존 레이아웃 삭제
+                            mainLayout.removeAllViews();
 
+                            for (DocumentSnapshot document : result.getDocuments()) { // 모든 문서를 순회합니다.
+                                Map<String, Object> data = document.getData();
+                                List<HashMap<String, Object>> priceList = (List<HashMap<String, Object>>) data.get("price");
+
+                                if (priceList != null) {
+                                    addNewRelativeLayout(mainLayout); // 새로운 RelativeLayout을 생성하고 메인 레이아웃에 추가합니다.
+
+                                    RelativeLayout newRelativeLayout = (RelativeLayout) mainLayout.getChildAt(mainLayout.getChildCount() - 1); // 방금 생성한 RelativeLayout을 찾습니다.
+
+                                    GridLayout newGridLayout = null;
+                                    for (int i = 0; i < newRelativeLayout.getChildCount(); i++) {  // RelativeLayout의 모든 자식 뷰를 순회하며 GridLayout을 찾습니다.
+                                        View child = newRelativeLayout.getChildAt(i);
+                                        if (child instanceof GridLayout) {
+                                            newGridLayout = (GridLayout) child;
+                                            // GridLayout의 기존 EditText row를 삭제합니다.
+                                            List<View> toRemove = new ArrayList<>();
+                                            for (int j = 0; j < newGridLayout.getChildCount(); j++) {
+                                                View gridChild = newGridLayout.getChildAt(j);
+                                                if (gridChild instanceof EditText) {
+                                                    toRemove.add(gridChild);
+                                                }
+                                            }
+                                            for (View view : toRemove) {
+                                                newGridLayout.removeView(view);
+                                            }
+                                            break;
+                                        }
+                                    }
+
+                                    EditText nameEdit = newRelativeLayout.findViewById(R.id.calculate_name);
+
+                                    for (HashMap<String, Object> price : priceList) {
+                                        if (price != null) {
+                                            String name = (String) data.get("name");
+                                            String content = (String) price.get("content");
+                                            String priceValue = String.valueOf(price.get("price"));
+
+                                            // null 값을 확인합니다.
+                                            if (name != null && content != null && priceValue != null) {
+                                                EditText contentEdit = createNewEditText(false);
+                                                EditText priceEdit = createNewEditText(false);
+
+                                                // contentEdit의 왼쪽 마진을 설정합니다.
+                                                GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+                                                params.setMargins(dpToPx(55), 0, 0, 0);  // 마진 적용
+                                                params.width = dpToPx(150);  // 너비 설정
+                                                params.height = dpToPx(48);  // 높이 설정
+                                                contentEdit.setLayoutParams(params);
+
+                                                nameEdit.setText(name);
+                                                contentEdit.setText(content);
+                                                priceEdit.setText(priceValue);
+
+                                                newGridLayout.addView(contentEdit); // 새로운 GridLayout에 뷰 추가.
+                                                newGridLayout.addView(priceEdit); // 새로운 GridLayout에 뷰 추가.
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Log.d("loadData", "정산 정보를 모두 불러왔습니다.");
+                });
+    }
 }
