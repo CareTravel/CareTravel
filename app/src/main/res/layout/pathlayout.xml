@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/path_linearlayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <GridLayout
+        android:id="@+id/path_gridlayout_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:orientation="horizontal"
+        android:rowCount="27">
+        <Button
+            android:id="@+id/path_day"
+            android:layout_width="300dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="55dp"
+            android:layout_marginTop="15dp"
+            android:autoSizeMaxTextSize="20sp"
+            android:autoSizeTextType="uniform"
+            android:background="@drawable/day_plan"
+            android:layout_columnSpan="2"
+            android:gravity="center"
+            android:text="1일차"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/path_location"
+            android:layout_width="150dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="55dp"
+            android:background="@drawable/cell2"
+            android:text="장소"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/path_etc"
+            android:layout_width="150dp"
+            android:layout_height="48dp"
+            android:background="@drawable/cell2"
+            android:text="설명"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/calculate_edit1"
+            android:layout_width="150dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="55dp"
+            android:background="@drawable/cell2"
+            android:hint="내용 입력"
+            android:inputType="text"
+            android:textAlignment="center"
+            android:textColorHint="#828282" />
+
+        <EditText
+            android:id="@+id/calculate_edit2"
+            android:layout_width="150dp"
+            android:layout_height="48dp"
+            android:background="@drawable/cell2"
+            android:hint="내용 입력"
+            android:inputType="text"
+            android:textAlignment="center"
+            android:textColorHint="#828282" />
+    </GridLayout>
+</LinearLayout>
