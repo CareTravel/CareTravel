@@ -47,7 +47,6 @@ public class calculation extends AppCompatActivity {
     private RelativeLayout relativeLayoutTable;
     private int userCount;
     int totalPrice; // 현재 로그인 되어 있는 계정의 금액
-    int a;
     int total=0; // 다른 사람 금액
     int totalAll=0; // 총계
 

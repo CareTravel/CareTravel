@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -41,6 +42,8 @@ public class material extends AppCompatActivity {
         binding = ActivityMaterialBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        FirebaseFirestore.getInstance();
+
         // 입장한 방 이름 가져오기
         SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
         roomName = sharedPreferences.getString("currentRoomName", null);
@@ -48,6 +51,7 @@ public class material extends AppCompatActivity {
 
         // 데이터 베이스
         initializeCloudFirestore();
+        FirebaseApp.initializeApp(this);
 
         // 먼저 등록한 버튼 출력
         loadData(roomName);
