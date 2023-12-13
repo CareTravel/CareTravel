@@ -16,7 +16,9 @@ import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -24,25 +26,44 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.caretravel.databinding.ActivityPathBinding;
 import com.example.caretravel.databinding.PathlayoutBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class path extends AppCompatActivity {
 
     //private GoogleMap map;
     String roomName;
+    private FirebaseFirestore db;
+    private RelativeLayout rootLayout;
+    private ActivityPathBinding binding;
+    private Intent intent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_path);
-        ActivityPathBinding binding = ActivityPathBinding.inflate(getLayoutInflater());
+        binding = ActivityPathBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        rootLayout = binding.pathRelative;
 
         Log.d("phj", "지도 방 들어옴");
         //서버 연결해서 같은 방으로 이어줌
         SharedPreferences sharedPreferences = getSharedPreferences("MyPreferences", MODE_PRIVATE);
         roomName = sharedPreferences.getString("currentRoomName", null);
         Log.d("phj", "지도 방이름 " + roomName);
+
+        FirebaseApp.initializeApp(this);
+        db = FirebaseFirestore.getInstance();
+        initializeCloudFirestore();
 
         binding.backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +78,10 @@ public class path extends AppCompatActivity {
             LinearLayout linearLayout = binding.pathLinearlayout;
             addNewRelativeLayout(linearLayout);
         });
+        binding.mapSave.setOnClickListener(v -> addData(roomName));
+//            Intent intent = new Intent(path.this, MapsFragment.class);
+//            intent.putExtra("정산", collection);
+//            startActivity(intent);
 
         Button regiBtn = findViewById(R.id.path_day);
         regiBtn.setOnClickListener(new View.OnClickListener() {
@@ -68,8 +93,18 @@ public class path extends AppCompatActivity {
                 fragmentTransaction.commit();
             }
         });
-
     }
+
+    private void initializeCloudFirestore() {
+        db = FirebaseFirestore.getInstance();
+    }
+
+
+    private void showToast(String message) {
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
     private int dayCounter = 1;
 
     private void addNewRelativeLayout(LinearLayout linearLayout) {
@@ -192,45 +227,71 @@ public class path extends AppCompatActivity {
         return Math.round(dp * density);
     }
 
-//    private void addNewRow(TableLayout tableLayout) {
-//        // 새로운 TableRow 생성
-//        TableRow newRow = new TableRow(this);
-//        newRow.setLayoutParams(new TableRow.LayoutParams(
-//                TableRow.LayoutParams.MATCH_PARENT,
-//                TableRow.LayoutParams.WRAP_CONTENT));
-//
-//        // 새로운 Button 생성
-//        Button button = new Button(this);
-//        button.setLayoutParams(new TableRow.LayoutParams(
-//                0, // 너비 0으로 설정하여 가중치를 사용
-//                TableRow.LayoutParams.MATCH_PARENT, 0.7f)); // 가중치 조절
-//        button.setText("시간 선택");
-//        button.setBackgroundColor(Color.WHITE);
-//        button.setOnClickListener(v -> showTimeInputDialog(button));
-//
-//        // 새로운 EditText 생성
-//        EditText editText1 = createNewEditText();
-//        EditText editText2 = createNewEditText();
-//
-//        // Button과 EditText를 TableRow에 추가
-//        newRow.addView(button);
-//        newRow.addView(editText1);
-//        newRow.addView(editText2);
-//
-//        // TableRow를 TableLayout에 추가
-//        tableLayout.addView(newRow);
-//    }
-//
-//    private EditText createNewEditText() {
-//        EditText editText = new EditText(this);
-//        editText.setLayoutParams(new TableRow.LayoutParams(
-//                0,
-//                TableRow.LayoutParams.MATCH_PARENT, 1.0f));
-//        editText.setHint("내용 입력");
-//        editText.setBackgroundColor(Color.WHITE);
-//        editText.setPadding(0, 0, 0, 0);
-//        editText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-//        editText.setInputType(InputType.TYPE_CLASS_TEXT);
-//        return editText;
-//    }
+    private void addData(String roomName) {
+        LinearLayout rootLayout = binding.pathLinearlayout;
+        String documentName = null;
+        String[] content = new String[2];
+        Map<String, Object> data = new HashMap<>();
+
+        // rootLayout의 각 자식 뷰에 대해 반복
+        for (int i = 0; i < rootLayout.getChildCount(); i++) {
+            ArrayList<Map<String, Object>> LocateList = new ArrayList<>();
+            View view = rootLayout.getChildAt(i);
+            // RelativeLayout을 포함하고 있는 경우
+            if (view instanceof RelativeLayout) {
+                RelativeLayout relativeLayout = (RelativeLayout) view;
+                // RelativeLayout 내의 각 뷰에 대해 반복
+                for (int j = 0; j < relativeLayout.getChildCount(); j++) {
+                    View innerView = relativeLayout.getChildAt(j);
+                    // 현재 뷰가 GridLayout인 경우
+                    if (innerView instanceof GridLayout) {
+                        GridLayout gridLayout = (GridLayout) innerView;
+                        // GridLayout의 각 행에 대해 반복
+                        for (int row = 0; row < gridLayout.getRowCount(); row++) {
+                            for (int column = 0; column < 2; column++) {
+                                // 현재 셀을 참조
+                                View cellView = gridLayout.getChildAt(row * gridLayout.getColumnCount() + column);
+                                // 첫번째 행의 버튼 텍스트를 문서 이름으로 사용
+                                if (cellView instanceof Button && row == 0) {
+                                    Button button = (Button) cellView;
+                                    documentName = button.getText().toString();
+                                }
+                                // 두번째 행부터 각 행의 EditText를 필드 값의 리스트로 저장
+                                else if (cellView instanceof EditText && row >= 2) {
+                                    EditText editText = (EditText) cellView;
+                                    content[column] = editText.getText().toString();
+                                }
+                            }
+                            // 행 데이터를 리스트에 추가
+                            if (row >= 2) {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("locate", content[0]);
+                                map.put("content", content[1]);
+                                LocateList.add(map);
+                            }
+                        }
+                    }
+                }
+                // 문서 이름이 있는 경우에만 Firestore에 데이터를 저장
+                if (documentName != null && !documentName.isEmpty()) {
+                    data.put("List", LocateList);
+                    db.collection("rooms").document(roomName).collection("경로").document(documentName)
+                            .set(data)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    showToast("저장했습니다.");
+                                    Log.d("lay", "저장했습니다.");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d("lay", "저장에 실패했습니다");
+                                }
+                            });
+                }
+            }
+        }
+    }
 }

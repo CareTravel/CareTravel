@@ -17,8 +17,7 @@
             android:layout_below="@+id/location_add"
             android:layout_marginTop="50dp"
             android:columnCount="2"
-            android:orientation="horizontal"
-            android:rowCount="27">
+            android:orientation="horizontal">
             <Button
                 android:id="@+id/path_day"
                 android:layout_width="300dp"
