@@ -105,6 +105,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <RelativeLayout
+                    android:id="@+id/path_relative"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
                 <Button
                     android:id="@+id/location_add"
                     android:layout_width="wrap_content"
@@ -117,6 +122,7 @@
                 android:id="@+id/path_gridlayout_table"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/location_add"
                 android:columnCount="2"
                 android:orientation="horizontal"
                 android:rowCount="27">
@@ -180,6 +186,7 @@
                     android:textAlignment="center"
                     android:textColorHint="#828282" />
             </GridLayout>
+                </RelativeLayout>
             </LinearLayout>
         </ScrollView>
 
