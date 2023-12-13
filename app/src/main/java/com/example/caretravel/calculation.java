@@ -400,7 +400,7 @@ public class calculation extends AppCompatActivity {
 
                             for (DocumentSnapshot document : result.getDocuments()) { // 모든 문서를 순회합니다.
                                 Map<String, Object> data = document.getData();
-                                List<HashMap<String, Object>> priceList = (List<HashMap<String, Object>>) data.get("price");
+                                List<HashMap<String, Object>> priceList = (List<HashMap<String, Object>>) data.get("List");
 
                                 if (priceList != null) {
                                     addNewRelativeLayout(mainLayout); // 새로운 RelativeLayout을 생성하고 메인 레이아웃에 추가합니다.
