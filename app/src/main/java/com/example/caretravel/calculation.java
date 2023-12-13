@@ -298,7 +298,7 @@ public class calculation extends AppCompatActivity {
 
     }
     private void loadDeposit(String depositName, int deposit, String name){
-        LinearLayout rootView = findViewById(R.id.depositLayout);
+        LinearLayout rootView = findViewById(R.id.deposit_layout);
         LinearLayout linearLayout = (LinearLayout) getLayoutInflater().inflate(R.layout.deposit_layout, null);
         TextView myName = linearLayout.findViewById(R.id.myName);
         myName.setText(name);

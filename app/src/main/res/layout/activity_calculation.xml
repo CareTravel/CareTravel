@@ -41,13 +41,13 @@
         android:layout_weight="1">
 
         <LinearLayout
-            android:id="@+id/linearLayout"
+            android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/depositLayout"
+                android:id="@+id/deposit_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -118,6 +118,12 @@
                 android:layout_marginLeft="280dp"
                 android:text="계산하기"
                 android:textSize="20sp" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
             <RelativeLayout
                 android:id="@+id/relativeLayout_table"
                 android:layout_width="match_parent"
@@ -180,28 +186,29 @@
                         android:textColor="#FFFFFF"
                         android:textStyle="bold" />
 
-<!--                    <EditText-->
-<!--                        android:id="@+id/calculate_edit1"-->
-<!--                        android:layout_width="150dp"-->
-<!--                        android:layout_height="48dp"-->
-<!--                        android:layout_marginLeft="55dp"-->
-<!--                        android:background="@drawable/cell2"-->
-<!--                        android:hint="내용 입력"-->
-<!--                        android:inputType="text"-->
-<!--                        android:textAlignment="center"-->
-<!--                        android:textColorHint="#828282" />-->
+                    <EditText
+                        android:id="@+id/calculate_edit1"
+                        android:layout_width="150dp"
+                        android:layout_height="48dp"
+                        android:layout_marginLeft="55dp"
+                        android:background="@drawable/cell2"
+                        android:hint="내용 입력"
+                        android:inputType="text"
+                        android:textAlignment="center"
+                        android:textColorHint="#828282" />
 
-<!--                    <EditText-->
-<!--                        android:id="@+id/calculate_edit2"-->
-<!--                        android:layout_width="150dp"-->
-<!--                        android:layout_height="48dp"-->
-<!--                        android:background="@drawable/cell2"-->
-<!--                        android:hint="내용 입력"-->
-<!--                        android:inputType="text"-->
-<!--                        android:textAlignment="center"-->
-<!--                        android:textColorHint="#828282" />-->
+                    <EditText
+                        android:id="@+id/calculate_edit2"
+                        android:layout_width="150dp"
+                        android:layout_height="48dp"
+                        android:background="@drawable/cell2"
+                        android:hint="내용 입력"
+                        android:inputType="text"
+                        android:textAlignment="center"
+                        android:textColorHint="#828282" />
                 </GridLayout>
             </RelativeLayout>
+        </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
