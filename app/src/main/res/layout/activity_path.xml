@@ -98,11 +98,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="70dp">
+
             <LinearLayout
                 android:id="@+id/path_linearlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/location_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="50dp"
+                    android:text="장소추가"
+                    tools:ignore="TouchTargetSizeCheck" />
 
             <GridLayout
                 android:id="@+id/path_gridlayout_table"
@@ -187,16 +196,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10sp"
                 android:layout_marginBottom="5dp"
-                android:text="인원추가"
+                android:text="날짜추가"
                 tools:ignore="TouchTargetSizeCheck" />
 
-            <Button
-                android:id="@+id/location_add"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:text="장소추가"
-                tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
 
     </FrameLayout>
