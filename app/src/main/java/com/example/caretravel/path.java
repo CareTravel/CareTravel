@@ -148,15 +148,10 @@ public class path extends AppCompatActivity {
 
         // plan_day1 텍스트 뷰의 텍스트를 설정
         TextView dayTextView = newGridLayout.findViewById(R.id.path_day);
-        if(dayCounter != 1){
-            dayTextView.setText(dayCounter + "일차");
-            dayCounter++;
-        }
-        else{
-            dayTextView.setText(dayCounter + "일차");
-            dayCounter++;
-        }
-        int daycount = dayCounter - 1;
+        dayCounter++;
+        Log.d("scr", "일차" + dayCounter);
+        dayTextView.setText(dayCounter + "일차");
+        int daycount = dayCounter -1;
         String documentName = daycount +"일차";
         Log.d("scr", documentName+"일차");
 
@@ -170,7 +165,7 @@ public class path extends AppCompatActivity {
                 Bundle bundle = new Bundle();
                 bundle.putString("roomname",roomName);
                 bundle.putString("day", documentName );
-//                MapsFragment.setArguments(bundle);
+                fragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.path_mapLayout, fragment);
                 fragmentTransaction.commit();
             }
@@ -337,10 +332,9 @@ public class path extends AppCompatActivity {
                             for (DocumentSnapshot document : result.getDocuments()) { // 모든 문서를 순회합니다.
                                 Map<String, Object> data = document.getData();
                                 List<HashMap<String, Object>> locateList = (List<HashMap<String, Object>>) data.get("List");
-                                String documentName = document.getId();
 
                                 if (locateList != null) {
-                                    addNewRelativeLayout(mainLayout); // 새로운 RelativeLayout을 생성하고 메인 레이아웃에 추가합니다.
+                                    addNewRelativeLoad(mainLayout); // 새로운 RelativeLayout을 생성하고 메인 레이아웃에 추가합니다.
                                     RelativeLayout newRelativeLayout = (RelativeLayout) mainLayout.getChildAt(mainLayout.getChildCount() - 1); // 방금 생성한 RelativeLayout을 찾습니다.
 
                                     GridLayout newGridLayout = null;
@@ -391,12 +385,15 @@ public class path extends AppCompatActivity {
                                     }
                                 }
                             }
+                            dayCounter--;
                         }
                     }
+
                     Log.d("loadData", "정산 정보를 모두 불러왔습니다.");
                 });
     }
-    private void addNewRelativeLoad(LinearLayout linearLayout, String documentName) {
+
+    public void addNewRelativeLoad(LinearLayout linearLayout) {
         // LayoutInflater 생성
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -433,7 +430,26 @@ public class path extends AppCompatActivity {
 
         // plan_day1 텍스트 뷰의 텍스트를 설정
         TextView dayTextView = newGridLayout.findViewById(R.id.path_day);
-        dayTextView.setText(documentName);
+        dayTextView.setText(dayCounter + "일차");
+        dayCounter++;
+        int daycount = dayCounter -1;
+        String documentName = daycount +"일차";
+        Log.d("scr", documentName+"일차");
+
+        //날짜 버튼
+        binding.pathDay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = new MapsFragment();
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                Bundle bundle = new Bundle();
+                bundle.putString("roomname",roomName);
+                bundle.putString("day", documentName );
+                fragment.setArguments(bundle);
+                fragmentTransaction.replace(R.id.path_mapLayout, fragment);
+                fragmentTransaction.commit();
+            }
+        });
     }
 
 }
