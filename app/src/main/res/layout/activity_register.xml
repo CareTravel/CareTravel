@@ -38,12 +38,12 @@
         android:textSize="30sp"
         android:textColor="@color/black"/>
 
-    <android.widget.SearchView
-        android:id="@+id/searchview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:iconifiedByDefault="false"
-        android:queryHint="검색할 방을 입력하세요." />
+<!--    <android.widget.SearchView-->
+<!--        android:id="@+id/searchview"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:iconifiedByDefault="false"-->
+<!--        android:queryHint="검색할 방을 입력하세요." />-->
 
 <!--    <LinearLayout-->
 <!--        android:id="@+id/relativeView"-->
@@ -54,7 +54,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/addButtonView"
             android:layout_width="match_parent"
-            android:layout_height="370dp"
+            android:layout_height="425dp"
             android:orientation="vertical"/>
 
         <Button
