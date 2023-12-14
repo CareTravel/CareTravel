@@ -118,28 +118,30 @@
                     android:text="장소추가"
                     tools:ignore="TouchTargetSizeCheck" />
 
+                    <Button
+                        android:id="@+id/path_day"
+                        android:layout_width="300dp"
+                        android:layout_height="48dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginTop="15dp"
+                        android:autoSizeMaxTextSize="20sp"
+                        android:autoSizeTextType="uniform"
+                        android:background="@drawable/day_plan"
+                        android:layout_below="@+id/location_add"
+                        android:layout_columnSpan="2"
+                        android:gravity="center"
+                        android:text="1일차"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+
             <GridLayout
                 android:id="@+id/path_gridlayout_table"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/location_add"
+                android:layout_below="@+id/path_day"
                 android:columnCount="2"
                 android:orientation="horizontal">
-                <Button
-                    android:id="@+id/path_day"
-                    android:layout_width="300dp"
-                    android:layout_height="48dp"
-                    android:layout_marginLeft="55dp"
-                    android:layout_marginTop="15dp"
-                    android:autoSizeMaxTextSize="20sp"
-                    android:autoSizeTextType="uniform"
-                    android:background="@drawable/day_plan"
-                    android:layout_columnSpan="2"
-                    android:gravity="center"
-                    android:text="1일차"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/path_location"

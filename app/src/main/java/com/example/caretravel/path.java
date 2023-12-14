@@ -267,31 +267,31 @@ public class path extends AppCompatActivity {
                 // RelativeLayout 내의 각 뷰에 대해 반복
                 for (int j = 0; j < relativeLayout.getChildCount(); j++) {
                     View innerView = relativeLayout.getChildAt(j);
+                    if(innerView instanceof Button) {
+                        Button button = (Button) innerView;
+                        documentName = button.getText().toString();
+                    }
                     // 현재 뷰가 GridLayout인 경우
                     if (innerView instanceof GridLayout) {
                         GridLayout gridLayout = (GridLayout) innerView;
+
                         // GridLayout의 각 행에 대해 반복
-                        for (int row = 0; row < gridLayout.getRowCount(); row++) {
+                        for (int row = 1; row < gridLayout.getRowCount(); row++) {
                             for (int column = 0; column < 2; column++) {
                                 // 현재 셀을 참조
                                 View cellView = gridLayout.getChildAt(row * gridLayout.getColumnCount() + column);
-                                // 첫번째 행의 버튼 텍스트를 문서 이름으로 사용
-                                if (cellView instanceof Button && row == 0) {
-                                    Button button = (Button) cellView;
-                                    documentName = button.getText().toString();
-                                }
                                 // 두번째 행부터 각 행의 EditText를 필드 값의 리스트로 저장
-                                else if (cellView instanceof EditText && row >= 2) {
-                                    EditText editText = (EditText) cellView;
-                                    content[column] = editText.getText().toString();
+                                if (cellView instanceof EditText) {
+                                    EditText editText1 = (EditText) cellView;
+                                    content[column] = editText1.getText().toString();
                                 }
                             }
                             // 행 데이터를 리스트에 추가
-                            if (row >= 2) {
-                                Map<String, Object> map = new HashMap<>();
-                                map.put("locate", content[0]);
-                                map.put("content", content[1]);
-                                LocateList.add(map);
+
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("locate", content[0]);
+                            map.put("content", content[1]);
+                            LocateList.add(map);
                             }
                         }
                     }
@@ -317,7 +317,6 @@ public class path extends AppCompatActivity {
                 }
             }
         }
-    }
 
     private void loadData(String roomName) {
         db.collection("rooms").document(roomName).collection("경로")
