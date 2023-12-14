@@ -15,7 +15,7 @@
         android:layout_width="300dp"
         android:layout_height="48dp"
         android:layout_marginLeft="55dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="50dp"
         android:autoSizeMaxTextSize="20sp"
         android:autoSizeTextType="uniform"
         android:background="@drawable/day_plan"

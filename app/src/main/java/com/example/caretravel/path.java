@@ -147,7 +147,7 @@ public class path extends AppCompatActivity {
         linearLayout.addView(newRelativeLayout);
 
         // plan_day1 텍스트 뷰의 텍스트를 설정
-        TextView dayTextView = newGridLayout.findViewById(R.id.path_day);
+        TextView dayTextView = newRelativeLayout.findViewById(R.id.path_day);
         dayCounter++;
         Log.d("scr", "일차" + dayCounter);
         dayTextView.setText(dayCounter + "일차");
@@ -428,7 +428,7 @@ public class path extends AppCompatActivity {
         linearLayout.addView(newRelativeLayout);
 
         // plan_day1 텍스트 뷰의 텍스트를 설정
-        TextView dayTextView = newGridLayout.findViewById(R.id.path_day);
+        TextView dayTextView = newRelativeLayout.findViewById(R.id.path_day);
         dayTextView.setText(dayCounter + "일차");
         dayCounter++;
         int daycount = dayCounter -1;
